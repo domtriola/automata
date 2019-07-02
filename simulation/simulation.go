@@ -10,12 +10,14 @@ import (
 )
 
 const (
-	x0      = 0
-	y0      = 0
-	width   = 500
-	height  = 500
-	nFrames = 256
-	delay   = 10
+	x0        = 0
+	y0        = 0
+	width     = 500
+	height    = 500
+	nFrames   = 1000
+	delay     = 5
+	nSpecies  = 3
+	threshold = 3
 )
 
 // Build creates an automata simulation as a GIF
@@ -43,21 +45,21 @@ func animate(name string) {
 	// Initialize palette based on input params for num of species
 	// Initialize Cells
 	for y := 0; y < height; y++ {
-		row := []Cell{}
+		row := []*Cell{}
 		for x := 0; x < width; x++ {
-			cl := Cell{
+			cell := Cell{
 				x:     x,
 				y:     y,
 				state: uint8(rand.Intn(3)),
 			}
-			row = append(row, cl)
+			row = append(row, &cell)
 		}
 		grid.rows = append(grid.rows, row)
 	}
 	// Initialize neighbors
 	for _, row := range grid.rows {
-		for _, cl := range row {
-			cl.neighbors = cl.getNeighbors(grid, dirs)
+		for _, cell := range row {
+			cell.neighbors = cell.getNeighbors(grid, dirs)
 		}
 	}
 
@@ -69,6 +71,22 @@ func animate(name string) {
 	// Step through simulation
 	for i := 0; i < nFrames-1; i++ {
 		// drawNextFrame(grid, anim)
+		//   setNextStates
+		for _, row := range grid.rows {
+			for _, cell := range row {
+				cell.nextState = cell.calcNextState(nSpecies, threshold)
+			}
+		}
+		//   setStates
+		for _, row := range grid.rows {
+			for _, cell := range row {
+				cell.state = cell.nextState
+			}
+		}
+
+		img := createImage(grid)
+		anim.Delay = append(anim.Delay, delay)
+		anim.Image = append(anim.Image, img)
 	}
 
 	f, _ := os.Create(name)
@@ -86,8 +104,8 @@ func createImage(grid Grid) (img *image.Paletted) {
 
 	// Generate image with random color
 	for y, row := range grid.rows {
-		for x, cl := range row {
-			img.SetColorIndex(x, y, rgb[cl.state])
+		for x, cell := range row {
+			img.SetColorIndex(x, y, rgb[cell.state])
 		}
 	}
 

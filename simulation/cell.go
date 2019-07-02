@@ -13,18 +13,18 @@ type Cell struct {
 	nextState uint8
 
 	// A collection of the cells that surround this cell
-	neighbors []Cell
+	neighbors []*Cell
 }
 
-func (cl Cell) getNeighbors(grid Grid, dirs map[string][3]int8) []Cell {
-	var neighbors []Cell
+func (cell Cell) getNeighbors(grid Grid, dirs map[string][3]int8) []*Cell {
+	var neighbors []*Cell
 
 	for _, coords := range dirs {
 		diffX, diffY, active := coords[0], coords[1], coords[2]
 
 		if active > 0 {
-			neighborX := cl.x + int(diffX)
-			neighborY := cl.y + int(diffY)
+			neighborX := cell.x + int(diffX)
+			neighborY := cell.y + int(diffY)
 			if grid.hasCoord(neighborX, neighborY) {
 				neighbors = append(neighbors, grid.get(neighborX, neighborY))
 			}
@@ -32,4 +32,21 @@ func (cl Cell) getNeighbors(grid Grid, dirs map[string][3]int8) []Cell {
 	}
 
 	return neighbors
+}
+
+func (cell Cell) calcNextState(nSpecies uint8, threshold uint8) uint8 {
+	predatorState := (cell.state + 1) % nSpecies
+	var count uint8
+
+	for _, neighbor := range cell.neighbors {
+		if neighbor.state == predatorState {
+			count++
+		}
+	}
+
+	if count >= threshold {
+		return predatorState
+	}
+
+	return cell.state
 }
