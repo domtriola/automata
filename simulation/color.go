@@ -1,9 +1,19 @@
 package simulation
 
-import "image/color"
+import (
+	"fmt"
+	"image/color"
+)
 
 // RGBARainbow creates an array of colors in rainbow order
-func RGBARainbow(step int) (rainbow color.Palette) {
+func RGBARainbow(step int) (rainbow color.Palette, err error) {
+	if step < 7 {
+		return rainbow, fmt.Errorf(
+			"step must be greater than 6, got: %d. Palette cannot hold more than 256 colors",
+			step,
+		)
+	}
+
 	// Start at Red
 	rgba := color.RGBA{255, 0, 0, 255}
 	rainbow = append(rainbow, rgba)
@@ -74,5 +84,5 @@ func RGBARainbow(step int) (rainbow color.Palette) {
 		rainbow = append(rainbow, rgba)
 	}
 
-	return rainbow
+	return rainbow, nil
 }

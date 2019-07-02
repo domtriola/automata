@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/gif"
+	"log"
 	"math/rand"
 	"os"
 )
@@ -13,7 +14,7 @@ const (
 	y0        = 0
 	width     = 500
 	height    = 500
-	nFrames   = 500
+	nFrames   = 50
 	delay     = 2
 	nSpecies  = 4
 	threshold = 2
@@ -41,7 +42,10 @@ func animate(name string) {
 	grid := Grid{width: width, height: height}
 	anim := gif.GIF{LoopCount: nFrames}
 
-	pal := RGBARainbow(50)
+	pal, err := RGBARainbow(7)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Initialize palette based on input params for num of species
 	// Initialize Cells
