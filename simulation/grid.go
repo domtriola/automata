@@ -1,6 +1,6 @@
 package simulation
 
-// Grid ...
+// Grid holds a two dimensional array of Cells
 type Grid struct {
 	width  int
 	height int
