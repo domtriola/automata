@@ -3,7 +3,6 @@ package simulation
 import (
 	"image"
 	"image/color"
-	"image/color/palette"
 	"image/gif"
 	"math/rand"
 	"os"
@@ -14,10 +13,10 @@ const (
 	y0        = 0
 	width     = 500
 	height    = 500
-	nFrames   = 1000
-	delay     = 5
-	nSpecies  = 3
-	threshold = 3
+	nFrames   = 500
+	delay     = 2
+	nSpecies  = 4
+	threshold = 2
 )
 
 // Build creates an automata simulation as a GIF
@@ -31,9 +30,9 @@ func animate(name string) {
 	dirs := map[string][3]int8{
 		"n":  {0, -1, 1}, // {x, y, active}
 		"ne": {1, -1, 1},
-		"e":  {1, 0, 1},
+		"e":  {1, 0, 0},
 		"se": {1, 1, 1},
-		"s":  {0, 1, 1},
+		"s":  {0, 1, 0},
 		"sw": {-1, 1, 1},
 		"w":  {-1, 0, 1},
 		"nw": {-1, -1, 1},
@@ -41,6 +40,8 @@ func animate(name string) {
 
 	grid := Grid{width: width, height: height}
 	anim := gif.GIF{LoopCount: nFrames}
+
+	pal := RGBARainbow(50)
 
 	// Initialize palette based on input params for num of species
 	// Initialize Cells
@@ -50,7 +51,7 @@ func animate(name string) {
 			cell := Cell{
 				x:     x,
 				y:     y,
-				state: uint8(rand.Intn(3)),
+				state: uint8(rand.Intn(nSpecies)),
 			}
 			row = append(row, &cell)
 		}
@@ -64,7 +65,7 @@ func animate(name string) {
 	}
 
 	// Draw image using Cell states to determine colors
-	img := createImage(grid)
+	img := createImage(grid, pal)
 	anim.Delay = append(anim.Delay, delay)
 	anim.Image = append(anim.Image, img)
 
@@ -84,7 +85,7 @@ func animate(name string) {
 			}
 		}
 
-		img := createImage(grid)
+		img := createImage(grid, pal)
 		anim.Delay = append(anim.Delay, delay)
 		anim.Image = append(anim.Image, img)
 	}
@@ -93,21 +94,28 @@ func animate(name string) {
 	gif.EncodeAll(f, &anim)
 }
 
-func createImage(grid Grid) (img *image.Paletted) {
+func createImage(grid Grid, pal color.Palette) (img *image.Paletted) {
 	rect := image.Rect(x0, y0, width, height)
-	img = image.NewPaletted(rect, palette.Plan9)
+	img = image.NewPaletted(rect, pal)
 
-	redIndex := uint8(img.Palette.Index(color.RGBA{255, 0, 0, 255}))
-	greenIndex := uint8(img.Palette.Index(color.RGBA{0, 255, 0, 255}))
-	blueIndex := uint8(img.Palette.Index(color.RGBA{0, 0, 255, 255}))
-	rgb := [3]uint8{redIndex, greenIndex, blueIndex}
+	colorIndexes := getColorIndexes(img, nSpecies)
 
 	// Generate image with random color
 	for y, row := range grid.rows {
 		for x, cell := range row {
-			img.SetColorIndex(x, y, rgb[cell.state])
+			img.SetColorIndex(x, y, uint8(colorIndexes[cell.state]))
 		}
 	}
 
 	return img
+}
+
+func getColorIndexes(img *image.Paletted, nSpecies uint8) (colorIndexes []uint8) {
+	step := len(img.Palette) / int(nSpecies)
+
+	for i := 0; i < int(nSpecies); i++ {
+		colorIndexes = append(colorIndexes, uint8(i*step))
+	}
+
+	return colorIndexes
 }
