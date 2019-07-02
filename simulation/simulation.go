@@ -18,7 +18,7 @@ const (
 	delay   = 10
 )
 
-// Build creates an automata simulation as a GIF (WIP)
+// Build creates an automata simulation as a GIF
 func Build() (name string) {
 	name = "tmp/image.gif"
 	animate(name)
@@ -26,7 +26,7 @@ func Build() (name string) {
 }
 
 func animate(name string) {
-	dirs := map[string][]int8{
+	dirs := map[string][3]int8{
 		"n":  {0, -1, 1}, // {x, y, active}
 		"ne": {1, -1, 1},
 		"e":  {1, 0, 1},
@@ -37,7 +37,7 @@ func animate(name string) {
 		"nw": {-1, -1, 1},
 	}
 
-	grd := Grid{width: width, height: height}
+	grid := Grid{width: width, height: height}
 	anim := gif.GIF{LoopCount: nFrames}
 
 	// Initialize palette based on input params for num of species
@@ -46,34 +46,36 @@ func animate(name string) {
 		row := []Cell{}
 		for x := 0; x < width; x++ {
 			cl := Cell{
+				x:     x,
+				y:     y,
 				state: uint8(rand.Intn(3)),
 			}
 			row = append(row, cl)
 		}
-		grd.rows = append(grd.rows, row)
+		grid.rows = append(grid.rows, row)
 	}
 	// Initialize neighbors
-	for _, row := range grd.rows {
+	for _, row := range grid.rows {
 		for _, cl := range row {
-			cl.neighbors = cl.getNeighbors(grd, dirs)
+			cl.neighbors = cl.getNeighbors(grid, dirs)
 		}
 	}
 
 	// Draw image using Cell states to determine colors
-	img := createImage(grd)
+	img := createImage(grid)
 	anim.Delay = append(anim.Delay, delay)
 	anim.Image = append(anim.Image, img)
 
 	// Step through simulation
 	for i := 0; i < nFrames-1; i++ {
-		// drawNextFrame(grd, anim)
+		// drawNextFrame(grid, anim)
 	}
 
 	f, _ := os.Create(name)
 	gif.EncodeAll(f, &anim)
 }
 
-func createImage(grd Grid) (img *image.Paletted) {
+func createImage(grid Grid) (img *image.Paletted) {
 	rect := image.Rect(x0, y0, width, height)
 	img = image.NewPaletted(rect, palette.Plan9)
 
@@ -83,7 +85,7 @@ func createImage(grd Grid) (img *image.Paletted) {
 	rgb := [3]uint8{redIndex, greenIndex, blueIndex}
 
 	// Generate image with random color
-	for y, row := range grd.rows {
+	for y, row := range grid.rows {
 		for x, cl := range row {
 			img.SetColorIndex(x, y, rgb[cl.state])
 		}
