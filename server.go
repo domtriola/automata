@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/domtriola/automata-gen/simulation"
 )
 
 func main() {
@@ -15,7 +17,11 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	query := r.URL.Query()
 
-	fmt.Fprint(w, "Server says...\n")
-	fmt.Fprintf(w, "Your path is: %q\n", path)
-	fmt.Fprintf(w, "Your your query is: \"%v\"\n", query)
+	fmt.Print("Server says...\n")
+	fmt.Printf("Your path is: %q\n", path)
+	fmt.Printf("Your your query is: \"%v\"\n", query)
+
+	fmt.Println("Building the simulation...")
+	imgName := simulation.Build()
+	http.ServeFile(w, r, imgName)
 }
