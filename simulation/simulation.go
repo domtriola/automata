@@ -35,7 +35,7 @@ var dirOptions = map[string]uint8{
 }
 
 var dirs = map[string][2]int8{
-	"n":  {0, -1}, // {x, y, active}
+	"n":  {0, -1}, // {x, y}
 	"ne": {1, -1},
 	"e":  {1, 0},
 	"se": {1, 1},
@@ -49,8 +49,6 @@ var dirs = map[string][2]int8{
 func Build(urlOptions map[string]interface{}) (name string) {
 	setOptions(urlOptions)
 
-	// TODO Calculate name by hasing parameters
-	// and check for image in cache before re-animating
 	name = "tmp/image.gif"
 	animate(name)
 	return name

@@ -5,7 +5,7 @@ import (
 	"image/color"
 )
 
-// RGBARainbow creates an array of colors in rainbow order
+// RGBARainbow creates an array of colors (a palette) in rainbow order
 func RGBARainbow(step int) (rainbow color.Palette, err error) {
 	if step < 7 {
 		return rainbow, fmt.Errorf(
