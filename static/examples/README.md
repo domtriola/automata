@@ -1,7 +1,5 @@
 # Examples
 
-* Three species able to attack from all directions (Cyclic Cellular Automata):
-
 * Five species able to attack from all directions:
 
 ![Five All](5s3tnw-n-ne-e-se-s-sw-w.gif)
