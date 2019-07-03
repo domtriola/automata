@@ -69,6 +69,10 @@ func setOptions(urlOptions map[string]interface{}) {
 }
 
 func setDirOptions(urlParamDirs []string) {
+	if len(urlParamDirs) < 1 {
+		return
+	}
+
 	for dir := range dirOptions {
 		dirOptions[dir] = 0
 	}
