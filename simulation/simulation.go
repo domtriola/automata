@@ -9,43 +9,54 @@ import (
 )
 
 const (
-	x0        = 0
-	y0        = 0
-	width     = 500
-	height    = 500
-	nFrames   = 50
-	delay     = 2
-	nSpecies  = 4
-	threshold = 2
+	x0 = 0
+	y0 = 0
 )
 
+var options = map[string]int{
+	"width":     500,
+	"height":    500,
+	"nFrames":   500,
+	"delay":     2,
+	"nSpecies":  3,
+	"threshold": 3,
+}
+
+// TODO: Integrate dirs into options
+var dirs = map[string][3]int8{
+	"n":  {0, -1, 1}, // {x, y, active}
+	"ne": {1, -1, 1},
+	"e":  {1, 0, 1},
+	"se": {1, 1, 1},
+	"s":  {0, 1, 1},
+	"sw": {-1, 1, 1},
+	"w":  {-1, 0, 1},
+	"nw": {-1, -1, 1},
+}
+
 // Build creates an automata simulation as a GIF
-func Build() (name string) {
+func Build(urlOptions map[string]interface{}) (name string) {
+	for option := range urlOptions {
+		if val, ok := urlOptions[option]; ok {
+			options[option] = val.(int)
+		}
+	}
+
 	name = "tmp/image.gif"
 	animate(name)
 	return name
 }
 
 func animate(name string) {
-	dirs := map[string][3]int8{
-		"n":  {0, -1, 1}, // {x, y, active}
-		"ne": {1, -1, 1},
-		"e":  {1, 0, 0},
-		"se": {1, 1, 1},
-		"s":  {0, 1, 0},
-		"sw": {-1, 1, 1},
-		"w":  {-1, 0, 1},
-		"nw": {-1, -1, 1},
-	}
-	grid := Grid{width: width, height: height}
-	anim := gif.GIF{LoopCount: nFrames}
+	grid := Grid{width: options["width"], height: options["height"]}
+	anim := gif.GIF{LoopCount: options["nFrames"]}
 	pal, err := RGBARainbow(7)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	grid.initializeCells(dirs)
-	for i := 0; i < nFrames; i++ {
+	for i := 0; i < options["nFrames"]; i++ {
 		drawNextFrame(grid, &anim, pal)
 	}
 
@@ -57,10 +68,9 @@ func animate(name string) {
 }
 
 func createImage(grid Grid, pal color.Palette) (img *image.Paletted) {
-	rect := image.Rect(x0, y0, width, height)
+	rect := image.Rect(x0, y0, options["width"], options["height"])
 	img = image.NewPaletted(rect, pal)
-
-	colorIndexes := getColorIndexes(img, nSpecies)
+	colorIndexes := getColorIndexes(img, options["nSpecies"])
 
 	for y, row := range grid.rows {
 		for x, cell := range row {
@@ -71,10 +81,10 @@ func createImage(grid Grid, pal color.Palette) (img *image.Paletted) {
 	return img
 }
 
-func getColorIndexes(img *image.Paletted, nSpecies uint8) (colorIndexes []uint8) {
-	step := len(img.Palette) / int(nSpecies)
+func getColorIndexes(img *image.Paletted, nSpecies int) (colorIndexes []uint8) {
+	step := len(img.Palette) / int(options["nSpecies"])
 
-	for i := 0; i < int(nSpecies); i++ {
+	for i := 0; i < int(options["nSpecies"]); i++ {
 		colorIndexes = append(colorIndexes, uint8(i*step))
 	}
 
@@ -85,7 +95,7 @@ func drawNextFrame(grid Grid, anim *gif.GIF, pal color.Palette) {
 	// Calculate next states
 	for _, row := range grid.rows {
 		for _, cell := range row {
-			cell.nextState = cell.calcNextState(nSpecies, threshold)
+			cell.nextState = cell.calcNextState(options["nSpecies"], options["threshold"])
 		}
 	}
 	// Apply next states
@@ -96,6 +106,6 @@ func drawNextFrame(grid Grid, anim *gif.GIF, pal color.Palette) {
 	}
 
 	img := createImage(grid, pal)
-	anim.Delay = append(anim.Delay, delay)
+	anim.Delay = append(anim.Delay, options["delay"])
 	anim.Image = append(anim.Image, img)
 }

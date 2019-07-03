@@ -34,18 +34,18 @@ func (cell Cell) getNeighbors(grid *Grid, dirs map[string][3]int8) []*Cell {
 	return neighbors
 }
 
-func (cell Cell) calcNextState(nSpecies uint8, threshold uint8) uint8 {
-	predatorState := (cell.state + 1) % nSpecies
-	var count uint8
+func (cell Cell) calcNextState(nSpecies, threshold int) uint8 {
+	predatorState := int(cell.state+1) % nSpecies
+	var count int
 
 	for _, neighbor := range cell.neighbors {
-		if neighbor.state == predatorState {
+		if int(neighbor.state) == predatorState {
 			count++
 		}
 	}
 
 	if count >= threshold {
-		return predatorState
+		return uint8(predatorState)
 	}
 
 	return cell.state

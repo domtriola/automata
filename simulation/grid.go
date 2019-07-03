@@ -19,13 +19,13 @@ func (grid Grid) get(x, y int) *Cell {
 
 func (grid *Grid) initializeCells(dirs map[string][3]int8) {
 	// Initialize Cells
-	for y := 0; y < height; y++ {
+	for y := 0; y < options["height"]; y++ {
 		row := []*Cell{}
-		for x := 0; x < width; x++ {
+		for x := 0; x < options["width"]; x++ {
 			cell := Cell{
 				x:     x,
 				y:     y,
-				state: uint8(rand.Intn(nSpecies)),
+				state: uint8(rand.Intn(options["nSpecies"])),
 			}
 			row = append(row, &cell)
 		}
