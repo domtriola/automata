@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"image/gif"
 	"log"
-	"math/rand"
 	"os"
 )
 
@@ -38,35 +37,14 @@ func animate(name string) {
 		"w":  {-1, 0, 1},
 		"nw": {-1, -1, 1},
 	}
-
 	grid := Grid{width: width, height: height}
 	anim := gif.GIF{LoopCount: nFrames}
-
 	pal, err := RGBARainbow(7)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Initialize palette based on input params for num of species
-	// Initialize Cells
-	for y := 0; y < height; y++ {
-		row := []*Cell{}
-		for x := 0; x < width; x++ {
-			cell := Cell{
-				x:     x,
-				y:     y,
-				state: uint8(rand.Intn(nSpecies)),
-			}
-			row = append(row, &cell)
-		}
-		grid.rows = append(grid.rows, row)
-	}
-	// Initialize neighbors
-	for _, row := range grid.rows {
-		for _, cell := range row {
-			cell.neighbors = cell.getNeighbors(grid, dirs)
-		}
-	}
+	grid.initializeCells(dirs)
 
 	// Draw image using Cell states to determine colors
 	img := createImage(grid, pal)
@@ -123,3 +101,22 @@ func getColorIndexes(img *image.Paletted, nSpecies uint8) (colorIndexes []uint8)
 
 	return colorIndexes
 }
+
+// func drawNextFrame(grid Grid, anim gif.GIF, pal color.Palette) {
+// 	// setNextStates
+// 	for _, row := range grid.rows {
+// 		for _, cell := range row {
+// 			cell.nextState = cell.calcNextState(nSpecies, threshold)
+// 		}
+// 	}
+// 	// setStates
+// 	for _, row := range grid.rows {
+// 		for _, cell := range row {
+// 			cell.state = cell.nextState
+// 		}
+// 	}
+
+// 	img := createImage(grid, pal)
+// 	anim.Delay = append(anim.Delay, delay)
+// 	anim.Image = append(anim.Image, img)
+// }

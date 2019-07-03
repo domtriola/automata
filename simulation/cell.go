@@ -16,7 +16,7 @@ type Cell struct {
 	neighbors []*Cell
 }
 
-func (cell Cell) getNeighbors(grid Grid, dirs map[string][3]int8) []*Cell {
+func (cell Cell) getNeighbors(grid *Grid, dirs map[string][3]int8) []*Cell {
 	var neighbors []*Cell
 
 	for _, coords := range dirs {

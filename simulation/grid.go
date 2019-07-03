@@ -1,5 +1,7 @@
 package simulation
 
+import "math/rand"
+
 // Grid holds a two dimensional array of Cells
 type Grid struct {
 	width  int
@@ -13,4 +15,26 @@ func (grid Grid) hasCoord(x, y int) bool {
 
 func (grid Grid) get(x, y int) *Cell {
 	return grid.rows[y][x]
+}
+
+func (grid *Grid) initializeCells(dirs map[string][3]int8) {
+	// Initialize Cells
+	for y := 0; y < height; y++ {
+		row := []*Cell{}
+		for x := 0; x < width; x++ {
+			cell := Cell{
+				x:     x,
+				y:     y,
+				state: uint8(rand.Intn(nSpecies)),
+			}
+			row = append(row, &cell)
+		}
+		grid.rows = append(grid.rows, row)
+	}
+	// Initialize neighbors
+	for _, row := range grid.rows {
+		for _, cell := range row {
+			cell.neighbors = cell.getNeighbors(grid, dirs)
+		}
+	}
 }
