@@ -4,24 +4,38 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"github.com/domtriola/automata-gen/simulation"
 )
 
 func main() {
-	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/gen", genHandler)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
+func genHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
+	options := map[string]interface{}{}
 
-	fmt.Print("Server says...\n")
-	fmt.Printf("Your path is: %q\n", path)
-	fmt.Printf("Your your query is: \"%v\"\n", query)
+	intParams := []string{"width", "height", "nFrames", "delay", "nSpecies", "threshold"}
+	for _, param := range intParams {
+		assignIntParam(options, query, param)
+	}
 
-	fmt.Println("Building the simulation...")
-	imgName := simulation.Build()
+	imgName := simulation.Build(options)
 	http.ServeFile(w, r, imgName)
+}
+
+func assignIntParam(options map[string]interface{}, query url.Values, key string) {
+	value := query.Get(key)
+	if value != "" {
+		intValue, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			options[key] = intValue
+		}
+	}
 }
