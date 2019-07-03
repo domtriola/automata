@@ -45,34 +45,14 @@ func animate(name string) {
 	}
 
 	grid.initializeCells(dirs)
-
-	// Draw image using Cell states to determine colors
-	img := createImage(grid, pal)
-	anim.Delay = append(anim.Delay, delay)
-	anim.Image = append(anim.Image, img)
-
-	// Step through simulation
-	for i := 0; i < nFrames-1; i++ {
-		// drawNextFrame(grid, anim)
-		//   setNextStates
-		for _, row := range grid.rows {
-			for _, cell := range row {
-				cell.nextState = cell.calcNextState(nSpecies, threshold)
-			}
-		}
-		//   setStates
-		for _, row := range grid.rows {
-			for _, cell := range row {
-				cell.state = cell.nextState
-			}
-		}
-
-		img := createImage(grid, pal)
-		anim.Delay = append(anim.Delay, delay)
-		anim.Image = append(anim.Image, img)
+	for i := 0; i < nFrames; i++ {
+		drawNextFrame(grid, &anim, pal)
 	}
 
-	f, _ := os.Create(name)
+	f, err := os.Create(name)
+	if err != nil {
+		log.Fatal(err)
+	}
 	gif.EncodeAll(f, &anim)
 }
 
@@ -82,7 +62,6 @@ func createImage(grid Grid, pal color.Palette) (img *image.Paletted) {
 
 	colorIndexes := getColorIndexes(img, nSpecies)
 
-	// Generate image with random color
 	for y, row := range grid.rows {
 		for x, cell := range row {
 			img.SetColorIndex(x, y, uint8(colorIndexes[cell.state]))
@@ -102,21 +81,21 @@ func getColorIndexes(img *image.Paletted, nSpecies uint8) (colorIndexes []uint8)
 	return colorIndexes
 }
 
-// func drawNextFrame(grid Grid, anim gif.GIF, pal color.Palette) {
-// 	// setNextStates
-// 	for _, row := range grid.rows {
-// 		for _, cell := range row {
-// 			cell.nextState = cell.calcNextState(nSpecies, threshold)
-// 		}
-// 	}
-// 	// setStates
-// 	for _, row := range grid.rows {
-// 		for _, cell := range row {
-// 			cell.state = cell.nextState
-// 		}
-// 	}
+func drawNextFrame(grid Grid, anim *gif.GIF, pal color.Palette) {
+	// Calculate next states
+	for _, row := range grid.rows {
+		for _, cell := range row {
+			cell.nextState = cell.calcNextState(nSpecies, threshold)
+		}
+	}
+	// Apply next states
+	for _, row := range grid.rows {
+		for _, cell := range row {
+			cell.state = cell.nextState
+		}
+	}
 
-// 	img := createImage(grid, pal)
-// 	anim.Delay = append(anim.Delay, delay)
-// 	anim.Image = append(anim.Image, img)
-// }
+	img := createImage(grid, pal)
+	anim.Delay = append(anim.Delay, delay)
+	anim.Image = append(anim.Image, img)
+}
