@@ -16,11 +16,11 @@ type Cell struct {
 	neighbors []*Cell
 }
 
-func (cell Cell) getNeighbors(grid *Grid, dirs map[string][3]int8) []*Cell {
+func (cell Cell) getNeighbors(grid *Grid, dirs map[string][2]int8) []*Cell {
 	var neighbors []*Cell
 
-	for _, coords := range dirs {
-		diffX, diffY, active := coords[0], coords[1], coords[2]
+	for dir, coords := range dirs {
+		diffX, diffY, active := coords[0], coords[1], dirOptions[dir]
 
 		if active > 0 {
 			neighborX := cell.x + int(diffX)

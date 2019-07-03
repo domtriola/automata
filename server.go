@@ -24,6 +24,8 @@ func genHandler(w http.ResponseWriter, r *http.Request) {
 		assignIntParam(options, query, param)
 	}
 
+	options["dirs"] = query["dirs"]
+
 	imgName := simulation.Build(options)
 	http.ServeFile(w, r, imgName)
 }

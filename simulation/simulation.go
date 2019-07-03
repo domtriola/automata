@@ -6,6 +6,7 @@ import (
 	"image/gif"
 	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -22,29 +23,62 @@ var options = map[string]int{
 	"threshold": 3,
 }
 
-// TODO: Integrate dirs into options
-var dirs = map[string][3]int8{
-	"n":  {0, -1, 1}, // {x, y, active}
-	"ne": {1, -1, 1},
-	"e":  {1, 0, 1},
-	"se": {1, 1, 1},
-	"s":  {0, 1, 1},
-	"sw": {-1, 1, 1},
-	"w":  {-1, 0, 1},
-	"nw": {-1, -1, 1},
+var dirOptions = map[string]uint8{
+	"n":  1, // 0 disabled, 1 enabled
+	"ne": 1,
+	"e":  1,
+	"se": 1,
+	"s":  1,
+	"sw": 1,
+	"w":  1,
+	"nw": 1,
+}
+
+var dirs = map[string][2]int8{
+	"n":  {0, -1}, // {x, y, active}
+	"ne": {1, -1},
+	"e":  {1, 0},
+	"se": {1, 1},
+	"s":  {0, 1},
+	"sw": {-1, 1},
+	"w":  {-1, 0},
+	"nw": {-1, -1},
 }
 
 // Build creates an automata simulation as a GIF
 func Build(urlOptions map[string]interface{}) (name string) {
-	for option := range urlOptions {
+	setOptions(urlOptions)
+
+	// TODO Calculate name by hasing parameters
+	// and check for image in cache before re-animating
+	name = "tmp/image.gif"
+	animate(name)
+	return name
+}
+
+func setOptions(urlOptions map[string]interface{}) {
+	for option := range options {
 		if val, ok := urlOptions[option]; ok {
 			options[option] = val.(int)
 		}
 	}
 
-	name = "tmp/image.gif"
-	animate(name)
-	return name
+	if val, ok := urlOptions["dirs"]; ok {
+		setDirOptions(val.([]string))
+	}
+}
+
+func setDirOptions(urlParamDirs []string) {
+	for dir := range dirOptions {
+		dirOptions[dir] = 0
+	}
+	for _, dirs := range urlParamDirs {
+		for _, dir := range strings.Split(dirs, ",") {
+			if _, ok := dirOptions[dir]; ok {
+				dirOptions[dir] = 1
+			}
+		}
+	}
 }
 
 func animate(name string) {

@@ -17,7 +17,7 @@ func (grid Grid) get(x, y int) *Cell {
 	return grid.rows[y][x]
 }
 
-func (grid *Grid) initializeCells(dirs map[string][3]int8) {
+func (grid *Grid) initializeCells(dirs map[string][2]int8) {
 	// Initialize Cells
 	for y := 0; y < options["height"]; y++ {
 		row := []*Cell{}
