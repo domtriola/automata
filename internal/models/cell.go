@@ -1,4 +1,4 @@
-package simulation
+package models
 
 // Cell represents one cell in the simulation.
 type Cell struct {
@@ -16,7 +16,7 @@ type Cell struct {
 	neighbors []*Cell
 }
 
-func (cell Cell) getNeighbors(grid *Grid, dirs map[string][2]int8) []*Cell {
+func (cell Cell) getNeighbors(grid *Grid, dirs map[string][2]int8, dirOptions map[string]uint8) []*Cell {
 	var neighbors []*Cell
 
 	for dir, coords := range dirs {
