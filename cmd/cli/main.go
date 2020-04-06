@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/domtriola/automata-gen/internal/models"
+	runner "github.com/domtriola/automata-gen/internal/simulation_runner"
 )
 
 func main() {
-	s := models.NewSimulationRunner("cellular_automata")
+	s, err := runner.NewSimulationRunner("cellular_automata")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	filename, err := s.BuildGIF()
 	if err != nil {
 		log.Fatalln(err)
