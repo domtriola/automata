@@ -15,7 +15,7 @@ type SlimeMold struct{}
 // OutputFilePath creates an output file path based on parameters of the
 // simulation
 func (s *SlimeMold) OutputFilePath() (string, error) {
-	return "", errors.New("not implemented")
+	return "", errors.New("OutputFilePath not implemented")
 }
 
 // InitializeGrid instantiates a grid
@@ -26,5 +26,5 @@ func (s *SlimeMold) InitializeGrid() *models.Grid {
 // CalculateNextFrame determines and assigns the next state of each organism's
 // parameters.
 func (s *SlimeMold) CalculateNextFrame(g *models.Grid) error {
-	return errors.New("not implemented")
+	return errors.New("CalculateNextFrame not implemented")
 }
