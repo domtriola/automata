@@ -8,7 +8,8 @@ var _ models.Simulation = (*SlimeMold)(nil)
 // networks based on where other mold particles have been.
 type SlimeMold struct{}
 
-// Build creates the simulation
-func (s *SlimeMold) Build() error {
+// CalculateNextFrame determines and assigns the next state of each organism's
+// parameters.
+func (s *SlimeMold) CalculateNextFrame() error {
 	return nil
 }

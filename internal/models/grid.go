@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 // Grid represents the simulation area. It contains spaces that organisms occupy
 // and move through.
 type Grid struct {
@@ -15,11 +17,15 @@ type Grid struct {
 
 // HasCoord returns a bool to indicate whether a coordinate falls within the
 // grid's height and width parameters.
-func (grid Grid) HasCoord(x, y int) bool {
-	return x > 0 && x < grid.Width && y > 0 && y < grid.Height
+func (g Grid) HasCoord(x, y int) bool {
+	return x >= 0 && x < g.Width && y >= 0 && y < g.Height
 }
 
 // GetSpace returns the space that resides at a given coordinate.
-func (grid Grid) GetSpace(x, y int) *Space {
-	return grid.Rows[y][x]
+func (g Grid) GetSpace(x, y int) (*Space, error) {
+	if !g.HasCoord(x, y) {
+		return &Space{}, fmt.Errorf("grid does not contain coord: %d, %d", x, y)
+	}
+
+	return g.Rows[y][x], nil
 }

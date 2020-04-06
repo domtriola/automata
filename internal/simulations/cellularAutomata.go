@@ -8,7 +8,8 @@ var _ models.Simulation = (*CellularAutomata)(nil)
 // can hunt and eat each other based on a set of simple parameters.
 type CellularAutomata struct{}
 
-// Build creates the simulation
-func (s *CellularAutomata) Build() error {
+// CalculateNextFrame determines and assigns the next state of each organism's
+// parameters.
+func (s *CellularAutomata) CalculateNextFrame() error {
 	return nil
 }
