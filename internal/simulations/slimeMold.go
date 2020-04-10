@@ -10,7 +10,14 @@ var _ models.Simulation = &SlimeMold{}
 
 // SlimeMold simulates a slime mold that leaves behind scent trails and creates
 // networks based on where other mold particles have been.
-type SlimeMold struct{}
+type SlimeMold struct {
+	cfg *models.SimulationConfig
+}
+
+// NewSlimeMold initializes and returns a new slime mold simulation
+func NewSlimeMold(cfg *models.SimulationConfig) *SlimeMold {
+	return &SlimeMold{}
+}
 
 // OutputFileName creates an output file path based on parameters of the
 // simulation

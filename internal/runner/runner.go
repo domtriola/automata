@@ -12,21 +12,33 @@ import (
 
 // Runner is responsible for instantiating and running a simulation.
 type Runner struct {
+	cfg  *Config
 	sim  models.Simulation
 	grid *models.Grid
 }
 
+// Config holds configs for the simulation runner
+type Config struct {
+	GIF *GIFConfig
+}
+
+// GIFConfig holds configurations specific to building a GIF
+type GIFConfig struct {
+	// Delay units are 100th of a second
+	Delay int
+}
+
 // New creates a new instance for Runner
-func New(simulationType string) (Runner, error) {
+func New(simType string, cfg *Config) (Runner, error) {
 	s := Runner{}
 
-	switch simulationType {
+	switch simType {
 	case "cellular_automata":
-		s.sim = &simulations.CellularAutomata{}
+		s.sim = simulations.NewCellularAutomata(&models.SimulationConfig{})
 	case "slime_mold":
-		s.sim = &simulations.SlimeMold{}
+		s.sim = simulations.NewSlimeMold(&models.SimulationConfig{})
 	default:
-		return s, fmt.Errorf("could not find simulation type: %s", simulationType)
+		return s, fmt.Errorf("could not find simulation type: %s", simType)
 	}
 
 	return s, nil

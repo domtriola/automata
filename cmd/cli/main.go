@@ -15,7 +15,11 @@ type args struct {
 func main() {
 	a := collectArgs()
 
-	s, err := runner.New(a.sim)
+	s, err := runner.New(a.sim, &runner.Config{
+		GIF: &runner.GIFConfig{
+			Delay: 2,
+		},
+	})
 	if err != nil {
 		log.Fatalln(err)
 	}

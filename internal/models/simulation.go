@@ -7,27 +7,27 @@ type Simulation interface {
 	CalculateNextFrame(g *Grid) error
 }
 
-// Options are the configurations for the simulation
-type Options struct {
+// SimulationConfig holds the configurations for the simulation
+type SimulationConfig struct {
 	// Width sets the width of the Grid
 	Width int
 
 	// Height sets the height of the Grid
 	Height int
 
-	// NFrames is the amount of frames that will be built in the GIF
+	// NFrames is the amount of frames that will be built
 	NFrames int
 
-	CellularAutomataOptions
-	SlimeMoldOptions
+	*CellularAutomataConfig
+	*SlimeMoldConfig
 }
 
-// CellularAutomataOptions are options specific to the cellular automata
+// CellularAutomataConfig are options specific to the cellular automata
 // simulation
-type CellularAutomataOptions struct{}
+type CellularAutomataConfig struct{}
 
-// SlimeMoldOptions are options specific to the cellular automata simulation
-type SlimeMoldOptions struct {
+// SlimeMoldConfig are options specific to the cellular automata simulation
+type SlimeMoldConfig struct {
 	ScentDecay        float32
 	ScentSpreadFactor float32
 }

@@ -10,7 +10,14 @@ var _ models.Simulation = &CellularAutomata{}
 
 // CellularAutomata simulates a scenario where cells in a 2-dimensional world
 // can hunt and eat each other based on a set of simple parameters.
-type CellularAutomata struct{}
+type CellularAutomata struct {
+	cfg *models.SimulationConfig
+}
+
+// NewCellularAutomata initializes and returns a new cellular automata simulation
+func NewCellularAutomata(cfg *models.SimulationConfig) *CellularAutomata {
+	return &CellularAutomata{}
+}
 
 // OutputFileName creates an output file path based on parameters of the
 // simulation
