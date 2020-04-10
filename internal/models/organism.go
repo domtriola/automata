@@ -32,6 +32,9 @@ type Organism struct {
 // OrganismFeatures contains optional features of an organism that apply to
 // certain simulations.
 type OrganismFeatures struct {
+	// SpeciesID identifies the species type of a cell
+	SpeciesID int
+
 	// direction represents the angular direction an organism is facing. A
 	// direction will be between 0 and 360.
 	direction float64

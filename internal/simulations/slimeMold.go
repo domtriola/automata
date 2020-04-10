@@ -2,6 +2,7 @@ package simulations
 
 import (
 	"errors"
+	"log"
 
 	"github.com/domtriola/automata-gen/internal/models"
 )
@@ -26,8 +27,8 @@ func (s *SlimeMold) OutputFileName() (string, error) {
 }
 
 // InitializeGrid instantiates a grid
-func (s *SlimeMold) InitializeGrid() *models.Grid {
-	return &models.Grid{}
+func (s *SlimeMold) InitializeGrid(g *models.Grid) {
+	log.Println(g)
 }
 
 // CalculateNextFrame determines and assigns the next state of each organism's

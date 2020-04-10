@@ -20,6 +20,15 @@ type Runner struct {
 
 // Config holds configs for the simulation runner
 type Config struct {
+	// Width sets the width of the Grid
+	Width int
+
+	// Height sets the height of the Grid
+	Height int
+
+	// NFrames is the amount of frames that will be built
+	NFrames int
+
 	Simulation *models.SimulationConfig
 	Output     *OutputConfig
 	GIF        *GIFConfig
@@ -38,12 +47,15 @@ type GIFConfig struct {
 
 // New creates a new instance for Runner
 func New(simType string, cfg *Config) (Runner, error) {
-	s := Runner{}
+	s := Runner{
+		cfg:  cfg,
+		grid: models.NewGrid(cfg.Width, cfg.Height),
+	}
 
 	switch simType {
-	case "cellular_automata":
+	case models.CellularAutomataType:
 		s.sim = simulations.NewCellularAutomata(cfg.Simulation)
-	case "slime_mold":
+	case models.SlimeMoldType:
 		s.sim = simulations.NewSlimeMold(cfg.Simulation)
 	default:
 		return s, fmt.Errorf("could not find simulation type: %s", simType)
@@ -62,10 +74,10 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 	out := strings.TrimSuffix(r.cfg.Output.Path, "/")
 	filepath = fmt.Sprintf("%s/%s", out, filename)
 
-	r.grid = r.sim.InitializeGrid()
+	r.sim.InitializeGrid(r.grid)
 
 	images := r.Animate(r.grid)
-	g := buildGIF(images)
+	g := buildGIF(images, r.cfg.GIF.Delay)
 
 	f, err := os.Create(filepath)
 	if err != nil {
@@ -84,11 +96,11 @@ func (r *Runner) Animate(g *models.Grid) []*image.Paletted {
 	return []*image.Paletted{}
 }
 
-func buildGIF(images []*image.Paletted) *gif.GIF {
+func buildGIF(images []*image.Paletted, delay int) *gif.GIF {
 	g := &gif.GIF{}
 
 	for _, img := range images {
-		g.Delay = append(g.Delay, 2) // TODODOM: use cfg
+		g.Delay = append(g.Delay, delay)
 		g.Image = append(g.Image, img)
 	}
 

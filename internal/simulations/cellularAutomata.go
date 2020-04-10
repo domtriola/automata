@@ -26,8 +26,14 @@ func (s *CellularAutomata) OutputFileName() (string, error) {
 }
 
 // InitializeGrid instantiates a grid
-func (s *CellularAutomata) InitializeGrid() *models.Grid {
-	return &models.Grid{}
+func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
+	oID := 0
+	for _, row := range g.Rows {
+		for _, space := range row {
+			space.Organism = models.NewOrganism(oID)
+			oID++
+		}
+	}
 }
 
 // CalculateNextFrame determines and assigns the next state of each organism's
