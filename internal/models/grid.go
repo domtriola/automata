@@ -9,20 +9,47 @@ import (
 // Grid represents the simulation area. It contains Spaces that organisms occupy
 // and move through.
 type Grid struct {
-	// Width represents the width of the Grid in Spaces.
-	Width int
-
-	// Height represents the height of the Grid in Spaces.
-	Height int
-
 	// Rows is a 2-dimensional array that contains Spaces in the inner-array.
 	Rows [][]*Space
+}
+
+// NewGrid initializes and returns a Grid with the given width and height
+func NewGrid(width int, height int) *Grid {
+	g := &Grid{}
+
+	for y := 0; y < height; y++ {
+		row := []*Space{}
+
+		for x := 0; x < width; x++ {
+			space := &Space{}
+			space.Organism = &Organism{}
+			row = append(row, space)
+		}
+
+		g.Rows = append(g.Rows, row)
+	}
+
+	return g
+}
+
+// Width returns the width of the Grid in Spaces.
+func (g *Grid) Width() int {
+	if len(g.Rows) == 0 {
+		return 0
+	}
+
+	return len(g.Rows[0])
+}
+
+// Height returns the height of the Grid in Spaces.
+func (g *Grid) Height() int {
+	return len(g.Rows)
 }
 
 // HasCoord returns a bool to indicate whether a coordinate falls within the
 // Grid's height and width parameters.
 func (g *Grid) HasCoord(x, y int) bool {
-	return x >= 0 && x < g.Width && y >= 0 && y < g.Height
+	return x >= 0 && x < g.Width() && y >= 0 && y < g.Height()
 }
 
 // GetSpace returns the Space that resides at a given coordinate.
