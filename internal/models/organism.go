@@ -37,6 +37,14 @@ type OrganismFeatures struct {
 	direction float64
 }
 
+// NewOrganism instantiates and returns a new Organism
+func NewOrganism(id int) *Organism {
+	return &Organism{
+		ID:       id,
+		Features: &OrganismFeatures{},
+	}
+}
+
 // GetDirection returns the direction an organism is facing.
 func (f *OrganismFeatures) GetDirection() float64 {
 	return f.direction

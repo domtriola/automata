@@ -22,7 +22,6 @@ func NewGrid(width int, height int) *Grid {
 
 		for x := 0; x < width; x++ {
 			space := &Space{}
-			space.Organism = &Organism{}
 			row = append(row, space)
 		}
 
