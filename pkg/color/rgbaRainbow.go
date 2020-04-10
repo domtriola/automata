@@ -5,40 +5,44 @@ import (
 	"image/color"
 )
 
-// CustomPalette contains an image/color.Palette and its size
-type CustomPalette struct {
-	color.Palette
-	Size int
-}
-
 // RGBARainbow creates a palette of colors in rainbow order. It accepts a step
 // parameter which determines the distance between each color shift. The smaller
-// the step, the more individual colors will result in the palette.
-func RGBARainbow(step int) (rainbow CustomPalette, err error) {
+// the step, the more individual colors will result in the palette. The smallest
+// possible step is 7, which results in 223 evenly spaced colors. With larger
+// steps, there will be less colors, and the colors will be less evenly spaced.
+// TODODOM: make that not so by passing overflow to next color selection.
+func RGBARainbow(step int) (*color.Palette, error) {
+	p := color.Palette{}
+
 	if step < 7 {
-		return rainbow, fmt.Errorf(
+		return &p, fmt.Errorf(
 			"step must be greater than 6, got: %d. Palette cannot hold more than 256 colors",
 			step,
 		)
 	}
 
-	p := color.Palette{}
+	if step > 255 {
+		return &p, fmt.Errorf(
+			"step must be less than 256, got: %d. 255 is the greatest color increment possible",
+			step,
+		)
+	}
 
 	// Start at Red
 	rgba := color.RGBA{255, 0, 0, 255}
 	p = append(p, rgba)
-	size := 1
 
 	// Red -> Yellow
 	for rgba.G < 255 {
 		nextValue := int(rgba.G) + step
+
+		// TODODOM: don't discard overflow. Use it to make distribution more even.
 		if nextValue > 255 {
 			nextValue = 255
 		}
 
 		rgba.G = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
 	// Yellow -> Green
@@ -50,7 +54,6 @@ func RGBARainbow(step int) (rainbow CustomPalette, err error) {
 
 		rgba.R = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
 	// Green -> Cyan
@@ -62,7 +65,6 @@ func RGBARainbow(step int) (rainbow CustomPalette, err error) {
 
 		rgba.B = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
 	// Cyan -> Blue
@@ -74,7 +76,6 @@ func RGBARainbow(step int) (rainbow CustomPalette, err error) {
 
 		rgba.G = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
 	// Blue -> Magenta
@@ -86,7 +87,6 @@ func RGBARainbow(step int) (rainbow CustomPalette, err error) {
 
 		rgba.R = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
 	// Magenta -> Red
@@ -98,11 +98,7 @@ func RGBARainbow(step int) (rainbow CustomPalette, err error) {
 
 		rgba.B = uint8(nextValue)
 		p = append(p, rgba)
-		size++
 	}
 
-	rainbow.Palette = p
-	rainbow.Size = size
-
-	return rainbow, nil
+	return &p, nil
 }
