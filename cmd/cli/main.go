@@ -20,7 +20,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	filename, err := s.BuildGIF()
+	filename, err := s.CreateGIF()
 	if err != nil {
 		log.Fatalln(err)
 	}

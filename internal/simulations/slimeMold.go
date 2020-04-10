@@ -12,10 +12,10 @@ var _ models.Simulation = &SlimeMold{}
 // networks based on where other mold particles have been.
 type SlimeMold struct{}
 
-// OutputFilePath creates an output file path based on parameters of the
+// OutputFileName creates an output file path based on parameters of the
 // simulation
-func (s *SlimeMold) OutputFilePath() (string, error) {
-	return "", errors.New("OutputFilePath not implemented")
+func (s *SlimeMold) OutputFileName() (string, error) {
+	return "", errors.New("OutputFileName not implemented")
 }
 
 // InitializeGrid instantiates a grid

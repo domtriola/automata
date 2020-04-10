@@ -6,8 +6,7 @@ import (
 
 // Organism represents one creature that can be displayed at one Space
 type Organism struct {
-	ID        int
-	Direction float64
+	ID int
 
 	// XPos is a float that represents an organisms location within the Grid.
 	// Positions are floats so that organisms can be at locations that are between
@@ -25,6 +24,9 @@ type Organism struct {
 
 	NextDiscreteXPos int
 	NextDiscreteYPos int
+
+	// Features holds features that may be unique to only certain simulations.
+	Features *OrganismFeatures
 }
 
 // OrganismFeatures contains optional features of an organism that apply to
@@ -36,13 +38,13 @@ type OrganismFeatures struct {
 }
 
 // GetDirection returns the direction an organism is facing.
-func (f OrganismFeatures) GetDirection() float64 {
+func (f *OrganismFeatures) GetDirection() float64 {
 	return f.direction
 }
 
 // SetDirection sets the direction an organism is facing. The direction is an
 // angular direction between 0 and 360.
-func (f OrganismFeatures) SetDirection(dir float64) error {
+func (f *OrganismFeatures) SetDirection(dir float64) error {
 	if dir < 0 || dir > 360 {
 		return fmt.Errorf(
 			"direction must be an angular direction between 0 and 360. Received: %f",

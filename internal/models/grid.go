@@ -1,6 +1,10 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"image"
+	"image/color"
+)
 
 // Grid represents the simulation area. It contains Spaces that organisms occupy
 // and move through.
@@ -17,15 +21,20 @@ type Grid struct {
 
 // HasCoord returns a bool to indicate whether a coordinate falls within the
 // Grid's height and width parameters.
-func (g Grid) HasCoord(x, y int) bool {
+func (g *Grid) HasCoord(x, y int) bool {
 	return x >= 0 && x < g.Width && y >= 0 && y < g.Height
 }
 
 // GetSpace returns the Space that resides at a given coordinate.
-func (g Grid) GetSpace(x, y int) (*Space, error) {
+func (g *Grid) GetSpace(x, y int) (*Space, error) {
 	if !g.HasCoord(x, y) {
 		return &Space{}, fmt.Errorf("grid does not contain coord: %d, %d", x, y)
 	}
 
 	return g.Rows[y][x], nil
+}
+
+// DrawImage draws the current state of the grid into a paletted image
+func (g *Grid) DrawImage(p color.Palette) *image.Paletted {
+	return &image.Paletted{}
 }

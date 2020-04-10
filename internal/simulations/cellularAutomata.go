@@ -12,10 +12,10 @@ var _ models.Simulation = &CellularAutomata{}
 // can hunt and eat each other based on a set of simple parameters.
 type CellularAutomata struct{}
 
-// OutputFilePath creates an output file path based on parameters of the
+// OutputFileName creates an output file path based on parameters of the
 // simulation
-func (s *CellularAutomata) OutputFilePath() (string, error) {
-	return "", errors.New("OutputFilePath not implemented")
+func (s *CellularAutomata) OutputFileName() (string, error) {
+	return "TODODOM.gif", nil
 }
 
 // InitializeGrid instantiates a grid
