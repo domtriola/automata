@@ -9,13 +9,17 @@ import (
 )
 
 type args struct {
-	sim string
+	sim        string
+	outputPath string
 }
 
 func main() {
 	a := collectArgs()
 
 	s, err := runner.New(a.sim, &runner.Config{
+		Output: &runner.OutputConfig{
+			Path: a.outputPath,
+		},
 		GIF: &runner.GIFConfig{
 			Delay: 2,
 		},
@@ -34,9 +38,11 @@ func main() {
 
 func collectArgs() *args {
 	sim := flag.String("sim", "cellular_automata", "The type of simulation to generate")
+	out := flag.String("out", "tmp/", "The path where the simulation will put generated files")
 	flag.Parse()
 
 	return &args{
-		sim: *sim,
+		sim:        *sim,
+		outputPath: *out,
 	}
 }

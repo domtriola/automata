@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/gif"
 	"os"
+	"strings"
 
 	"github.com/domtriola/automata-gen/internal/models"
 	"github.com/domtriola/automata-gen/internal/simulations"
@@ -19,7 +20,14 @@ type Runner struct {
 
 // Config holds configs for the simulation runner
 type Config struct {
-	GIF *GIFConfig
+	Simulation *models.SimulationConfig
+	Output     *OutputConfig
+	GIF        *GIFConfig
+}
+
+// OutputConfig holds configs for the output of the simulation
+type OutputConfig struct {
+	Path string
 }
 
 // GIFConfig holds configurations specific to building a GIF
@@ -34,9 +42,9 @@ func New(simType string, cfg *Config) (Runner, error) {
 
 	switch simType {
 	case "cellular_automata":
-		s.sim = simulations.NewCellularAutomata(&models.SimulationConfig{})
+		s.sim = simulations.NewCellularAutomata(cfg.Simulation)
 	case "slime_mold":
-		s.sim = simulations.NewSlimeMold(&models.SimulationConfig{})
+		s.sim = simulations.NewSlimeMold(cfg.Simulation)
 	default:
 		return s, fmt.Errorf("could not find simulation type: %s", simType)
 	}
@@ -51,8 +59,8 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 		return "", err
 	}
 
-	// TODODOM: get filepath from cfg
-	filepath = fmt.Sprintf("tmp/%s", filename)
+	out := strings.TrimSuffix(r.cfg.Output.Path, "/")
+	filepath = fmt.Sprintf("%s/%s", out, filename)
 
 	r.grid = r.sim.InitializeGrid()
 
