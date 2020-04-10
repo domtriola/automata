@@ -4,23 +4,23 @@ import (
 	"fmt"
 )
 
-// Organism represents one creature that can be displayed at one space
+// Organism represents one creature that can be displayed at one Space
 type Organism struct {
 	ID        int
 	Direction float64
 
-	// XPos is a float that represents an organisms location within the grid.
+	// XPos is a float that represents an organisms location within the Grid.
 	// Positions are floats so that organisms can be at locations that are between
-	// spaces. This allows them to travel in any direction (otherwise they would
+	// Spaces. This allows them to travel in any direction (otherwise they would
 	// be limited to 45˚ increments). Their visible location will still be one
-	// discrete space (whichever space they are closest to).
+	// discrete Space (whichever Space they are closest to).
 	XPos float64
 
-	// YPos is a float that represents an organisms location within the grid.
+	// YPos is a float that represents an organisms location within the Grid.
 	// Positions are floats so that organisms can be at locations that are between
-	// spaces. This allows them to travel in any direction (otherwise they would
+	// Spaces. This allows them to travel in any direction (otherwise they would
 	// be limited to 45˚ increments). Their visible location will still be one
-	// discrete space (whichever space they are closest to).
+	// discrete Space (whichever Space they are closest to).
 	YPos float64
 
 	NextDiscreteXPos int

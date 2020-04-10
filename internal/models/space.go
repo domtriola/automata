@@ -6,7 +6,7 @@ type Space struct {
 	Features *SpaceFeatures
 }
 
-// SpaceFeatures contains optional features of a space that apply to certain
+// SpaceFeatures contains optional features of a Space that apply to certain
 // simulations.
 type SpaceFeatures struct {
 	// Scent represents the strength of a scent that may be left behind by organisms.

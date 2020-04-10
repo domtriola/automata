@@ -9,10 +9,10 @@ type Simulation interface {
 
 // Options are the configurations for the simulation
 type Options struct {
-	// Width sets the width of the grid
+	// Width sets the width of the Grid
 	Width int
 
-	// Height sets the height of the grid
+	// Height sets the height of the Grid
 	Height int
 
 	// NFrames is the amount of frames that will be built in the GIF
