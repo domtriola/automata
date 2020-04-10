@@ -5,3 +5,6 @@ unit:
 
 lint:
 	scripts/lint.sh
+
+example:
+	go run cmd/cli/main.go
