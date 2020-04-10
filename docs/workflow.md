@@ -2,6 +2,8 @@
 
 ## Dev Setup
 
+Prerequisites: [xcode](https://developer.apple.com/library/archive/technotes/tn2339/_index.html), [go](https://golang.org/doc/install), [golangci-lint](https://github.com/golangci/golangci-lint)
+
 ### Install
 
 ```bash
