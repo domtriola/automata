@@ -1,14 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
-	runner "github.com/domtriola/automata-gen/internal/simulation_runner"
+	"github.com/domtriola/automata-gen/internal/runner"
 )
 
+type args struct {
+	sim string
+}
+
 func main() {
-	s, err := runner.NewSimulationRunner("cellular_automata")
+	a := collectArgs()
+
+	s, err := runner.New(a.sim)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -19,4 +26,13 @@ func main() {
 	}
 
 	fmt.Println("Simulation GIF created at:", filename)
+}
+
+func collectArgs() *args {
+	sim := flag.String("sim", "cellular_automata", "The type of simulation to generate")
+	flag.Parse()
+
+	return &args{
+		sim: *sim,
+	}
 }

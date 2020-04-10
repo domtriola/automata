@@ -7,15 +7,15 @@ import (
 	"github.com/domtriola/automata-gen/internal/simulations"
 )
 
-// SimulationRunner is responsible for instantiating and running a simulation.
-type SimulationRunner struct {
+// Runner is responsible for instantiating and running a simulation.
+type Runner struct {
 	Sim  models.Simulation
 	grid *models.Grid
 }
 
-// NewSimulationRunner creates a new instance for SimulationRunner
-func NewSimulationRunner(simulationType string) (SimulationRunner, error) {
-	s := SimulationRunner{}
+// New creates a new instance for Runner
+func New(simulationType string) (Runner, error) {
+	s := Runner{}
 
 	switch simulationType {
 	case "cellular_automata":
@@ -30,7 +30,7 @@ func NewSimulationRunner(simulationType string) (SimulationRunner, error) {
 }
 
 // BuildGIF creates the simulation
-func (s *SimulationRunner) BuildGIF() (filepath string, err error) {
+func (s *Runner) BuildGIF() (filepath string, err error) {
 	filepath, err = s.Sim.OutputFilePath()
 	s.grid = s.Sim.InitializeGrid()
 
@@ -38,4 +38,4 @@ func (s *SimulationRunner) BuildGIF() (filepath string, err error) {
 }
 
 // Animate assembles all of the frames for the GIF
-func (s *SimulationRunner) Animate() {}
+func (s *Runner) Animate() {}
