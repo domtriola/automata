@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image"
 	"image/color"
+	"math/rand"
 
 	"github.com/domtriola/automata/internal/models"
 	ccolor "github.com/domtriola/automata/pkg/color"
@@ -14,13 +15,21 @@ var _ models.Simulation = &CellularAutomata{}
 // CellularAutomata simulates a scenario where cells in a 2-dimensional world
 // can hunt and eat each other based on a set of simple parameters.
 type CellularAutomata struct {
-	cfg     *models.SimulationConfig
+	cfg     CellularAutomataConfig
 	palette color.Palette
+}
+
+// CellularAutomataConfig holds the configurations for the cellular automata
+// simulation
+type CellularAutomataConfig struct {
+	nSpecies int
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
 func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error) {
-	s := &CellularAutomata{cfg: cfg}
+	s := &CellularAutomata{cfg: CellularAutomataConfig{
+		nSpecies: cfg.CellularAutomata.NSpecies,
+	}}
 	err := s.setPalette()
 
 	return s, err
@@ -37,7 +46,10 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 	oID := 0
 	for _, row := range g.Rows {
 		for _, space := range row {
-			space.Organism = models.NewOrganism(oID)
+			o := models.NewOrganism(oID)
+			o.Features.SpeciesID = 1 + rand.Intn(s.cfg.nSpecies)
+
+			space.Organism = o
 			oID++
 		}
 	}
@@ -57,7 +69,7 @@ func (s *CellularAutomata) DrawSpace(
 	x int,
 	y int,
 ) {
-	sci := speciesColorIndexes(img, s.cfg.CellularAutomata.NSpecies)
+	sci := speciesColorIndexes(img, s.cfg.nSpecies)
 
 	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID])
 }

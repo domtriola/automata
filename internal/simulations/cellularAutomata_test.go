@@ -16,7 +16,11 @@ func TestCellularAutomata(t *testing.T) {
 
 	t.Run("CellularAutomata.Initialize() fills every space with a cell", func(t *testing.T) {
 		g := models.NewGrid(4, 4)
-		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{})
+		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
+			CellularAutomata: &models.CellularAutomataConfig{
+				NSpecies: 3,
+			},
+		})
 		require.NoError(t, err)
 
 		s.InitializeGrid(g)
@@ -24,6 +28,28 @@ func TestCellularAutomata(t *testing.T) {
 		for _, row := range g.Rows {
 			for _, space := range row {
 				assert.NotNil(t, space.Organism, "unexpected empty space")
+			}
+		}
+	})
+
+	t.Run("CellularAutomata.Initialize() assigns each cell a non-zero SpeciesID", func(t *testing.T) {
+		nSpecies := 3
+
+		g := models.NewGrid(10, 10)
+		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
+			CellularAutomata: &models.CellularAutomataConfig{
+				NSpecies: nSpecies,
+			},
+		})
+		require.NoError(t, err)
+
+		s.InitializeGrid(g)
+
+		for _, row := range g.Rows {
+			for _, space := range row {
+				assert.NotNil(t, space.Organism, "unexpected empty space")
+				assert.NotZero(t, space.Organism.Features.SpeciesID, "unexpected species id")
+				assert.LessOrEqual(t, space.Organism.Features.SpeciesID, nSpecies, "unexpected species id")
 			}
 		}
 	})

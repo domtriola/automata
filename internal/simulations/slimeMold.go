@@ -14,8 +14,13 @@ var _ models.Simulation = &SlimeMold{}
 // SlimeMold simulates a slime mold that leaves behind scent trails and creates
 // networks based on where other mold particles have been.
 type SlimeMold struct {
-	cfg     *models.SimulationConfig
+	cfg     SlimeMoldConfig
 	palette color.Palette
+}
+
+// SlimeMoldConfig holds the configurations for the cellular automata
+// simulation
+type SlimeMoldConfig struct {
 }
 
 // NewSlimeMold initializes and returns a new slime mold simulation

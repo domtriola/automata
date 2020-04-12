@@ -22,6 +22,7 @@ type Simulation interface {
 
 // SimulationConfig holds the configurations for the simulation
 type SimulationConfig struct {
+	// TODODOM: don't use pointers for configs
 	CellularAutomata *CellularAutomataConfig
 	SlimeMold        *SlimeMoldConfig
 }
