@@ -3,7 +3,7 @@ package models_test
 import (
 	"testing"
 
-	"github.com/domtriola/automata-gen/internal/models"
+	"github.com/domtriola/automata/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

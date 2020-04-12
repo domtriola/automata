@@ -5,7 +5,8 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/domtriola/automata-gen/internal/models"
+	"github.com/domtriola/automata/internal/models"
+	ccolor "github.com/domtriola/automata/pkg/color"
 )
 
 var _ models.Simulation = &CellularAutomata{}
@@ -13,14 +14,21 @@ var _ models.Simulation = &CellularAutomata{}
 // CellularAutomata simulates a scenario where cells in a 2-dimensional world
 // can hunt and eat each other based on a set of simple parameters.
 type CellularAutomata struct {
-	cfg *models.SimulationConfig
+	cfg     *models.SimulationConfig
+	palette *color.Palette
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
-func NewCellularAutomata(cfg *models.SimulationConfig) *CellularAutomata {
-	return &CellularAutomata{
-		cfg: cfg,
+func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error) {
+	p, err := createPalette()
+	if err != nil {
+		return &CellularAutomata{}, err
 	}
+
+	return &CellularAutomata{
+		cfg:     cfg,
+		palette: p,
+	}, nil
 }
 
 // OutputFileName creates an output file path based on parameters of the
@@ -69,4 +77,8 @@ func speciesColorIndexes(img *image.Paletted, nSpecies int) []uint8 {
 	}
 
 	return colorIndexes
+}
+
+func createPalette() (*color.Palette, error) {
+	return ccolor.RGBARainbow(7)
 }

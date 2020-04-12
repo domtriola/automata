@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/domtriola/automata-gen/internal/models"
+	"github.com/domtriola/automata/internal/models"
 )
 
 var _ models.Simulation = &SlimeMold{}

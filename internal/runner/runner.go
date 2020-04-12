@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/domtriola/automata-gen/internal/models"
-	"github.com/domtriola/automata-gen/internal/simulations"
+	"github.com/domtriola/automata/internal/models"
+	"github.com/domtriola/automata/internal/simulations"
 )
 
 // Runner is responsible for instantiating and running a simulation.
@@ -47,21 +47,26 @@ type GIFConfig struct {
 
 // New creates a new instance for Runner
 func New(simType string, cfg *Config) (Runner, error) {
-	s := Runner{
+	var err error
+
+	r := Runner{
 		cfg:  cfg,
 		grid: models.NewGrid(cfg.Width, cfg.Height),
 	}
 
 	switch simType {
 	case models.CellularAutomataType:
-		s.sim = simulations.NewCellularAutomata(cfg.Simulation)
+		r.sim, err = simulations.NewCellularAutomata(cfg.Simulation)
+		if err != nil {
+			return r, err
+		}
 	case models.SlimeMoldType:
-		s.sim = simulations.NewSlimeMold(cfg.Simulation)
+		r.sim = simulations.NewSlimeMold(cfg.Simulation)
 	default:
-		return s, fmt.Errorf("could not find simulation type: %s", simType)
+		return r, fmt.Errorf("could not find simulation type: %s", simType)
 	}
 
-	return s, nil
+	return r, nil
 }
 
 // CreateGIF creates the simulation
@@ -93,7 +98,13 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 
 // Animate assembles all of the frames for the GIF
 func (r *Runner) Animate(g *models.Grid) []*image.Paletted {
-	return []*image.Paletted{}
+	images := []*image.Paletted{}
+
+	for i := 0; i < r.cfg.NFrames; i++ {
+		// img := g.DrawImage()
+	}
+
+	return images
 }
 
 func buildGIF(images []*image.Paletted, delay int) *gif.GIF {

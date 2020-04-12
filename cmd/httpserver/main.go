@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/domtriola/automata-gen/internal/handlers"
+	"github.com/domtriola/automata/internal/handlers"
 )
 
 const port = 8000

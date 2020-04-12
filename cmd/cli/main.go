@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/domtriola/automata-gen/internal/models"
-	"github.com/domtriola/automata-gen/internal/runner"
+	"github.com/domtriola/automata/internal/models"
+	"github.com/domtriola/automata/internal/runner"
 )
 
 type args struct {

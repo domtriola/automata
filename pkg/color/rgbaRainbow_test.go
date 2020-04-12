@@ -3,7 +3,7 @@ package color_test
 import (
 	"testing"
 
-	"github.com/domtriola/automata-gen/pkg/color"
+	"github.com/domtriola/automata/pkg/color"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

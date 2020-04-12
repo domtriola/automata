@@ -1,4 +1,4 @@
-module github.com/domtriola/automata-gen
+module github.com/domtriola/automata
 
 go 1.12
 

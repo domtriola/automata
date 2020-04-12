@@ -5,9 +5,10 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/domtriola/automata-gen/internal/models"
-	"github.com/domtriola/automata-gen/internal/simulations"
+	"github.com/domtriola/automata/internal/models"
+	"github.com/domtriola/automata/internal/simulations"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCellularAutomata(t *testing.T) {
@@ -15,7 +16,8 @@ func TestCellularAutomata(t *testing.T) {
 
 	t.Run("CellularAutomata.Initialize() fills every space with a cell", func(t *testing.T) {
 		g := models.NewGrid(4, 4)
-		s := simulations.NewCellularAutomata(&models.SimulationConfig{})
+		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{})
+		require.NoError(t, err)
 
 		s.InitializeGrid(g)
 
@@ -44,11 +46,12 @@ func TestCellularAutomata(t *testing.T) {
 			color.RGBA{R: 9, G: 9, B: 9, A: 0},
 		}
 		img := image.NewPaletted(image.Rect(0, 0, 4, 4), p)
-		s := simulations.NewCellularAutomata(&models.SimulationConfig{
+		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
 			CellularAutomata: &models.CellularAutomataConfig{
 				NSpecies: 4,
 			},
 		})
+		require.NoError(t, err)
 
 		s.DrawSpace(space, img, &p, 1, 2)
 

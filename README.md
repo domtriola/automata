@@ -1,6 +1,6 @@
 # Automata Generator
 
-[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/domtriola/automata-gen)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/domtriola/automata)
 
 [Project Layout](https://github.com/golang-standards/project-layout)
 
@@ -8,7 +8,7 @@ Automata is a tool to generate automata simulations.
 
 ## Setup
 
-Install: `go get github.com/domtriola/automata-gen`
+Install: `go get github.com/domtriola/automata`
 
 [Workflow](docs/workflow.md)
 
