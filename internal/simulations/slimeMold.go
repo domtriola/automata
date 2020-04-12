@@ -2,6 +2,7 @@ package simulations
 
 import (
 	"errors"
+	"image/color"
 	"log"
 
 	"github.com/domtriola/automata/internal/models"
@@ -12,7 +13,8 @@ var _ models.Simulation = &SlimeMold{}
 // SlimeMold simulates a slime mold that leaves behind scent trails and creates
 // networks based on where other mold particles have been.
 type SlimeMold struct {
-	cfg *models.SimulationConfig
+	cfg     *models.SimulationConfig
+	palette color.Palette
 }
 
 // NewSlimeMold initializes and returns a new slime mold simulation
@@ -35,4 +37,9 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) {
 // parameters.
 func (s *SlimeMold) CalculateNextFrame(g *models.Grid) error {
 	return errors.New("CalculateNextFrame not implemented")
+}
+
+// GetPalette returns the simulation's color palette
+func (s *SlimeMold) GetPalette() color.Palette {
+	return s.palette
 }

@@ -15,20 +15,15 @@ var _ models.Simulation = &CellularAutomata{}
 // can hunt and eat each other based on a set of simple parameters.
 type CellularAutomata struct {
 	cfg     *models.SimulationConfig
-	palette *color.Palette
+	palette color.Palette
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
 func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error) {
-	p, err := createPalette()
-	if err != nil {
-		return &CellularAutomata{}, err
-	}
+	s := &CellularAutomata{cfg: cfg}
+	err := s.setPalette()
 
-	return &CellularAutomata{
-		cfg:     cfg,
-		palette: p,
-	}, nil
+	return s, err
 }
 
 // OutputFileName creates an output file path based on parameters of the
@@ -68,6 +63,11 @@ func (s *CellularAutomata) DrawSpace(
 	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID])
 }
 
+// GetPalette returns the simulation's color palette
+func (s *CellularAutomata) GetPalette() color.Palette {
+	return s.palette
+}
+
 func speciesColorIndexes(img *image.Paletted, nSpecies int) []uint8 {
 	colorIndexes := []uint8{}
 	step := len(img.Palette) / nSpecies
@@ -79,6 +79,17 @@ func speciesColorIndexes(img *image.Paletted, nSpecies int) []uint8 {
 	return colorIndexes
 }
 
-func createPalette() (*color.Palette, error) {
+func (s *CellularAutomata) setPalette() error {
+	p, err := createPalette()
+	if err != nil {
+		return err
+	}
+
+	s.palette = p
+
+	return nil
+}
+
+func createPalette() (color.Palette, error) {
 	return ccolor.RGBARainbow(7)
 }

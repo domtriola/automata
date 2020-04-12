@@ -11,18 +11,18 @@ import (
 // possible step is 7, which results in 223 evenly spaced colors. With larger
 // steps, there will be less colors, and the colors will be less evenly spaced.
 // TODODOM: make that not so by passing overflow to next color selection.
-func RGBARainbow(step int) (*color.Palette, error) {
+func RGBARainbow(step int) (color.Palette, error) {
 	p := color.Palette{}
 
 	if step < 7 {
-		return &p, fmt.Errorf(
+		return p, fmt.Errorf(
 			"step must be greater than 6, got: %d. Palette cannot hold more than 256 colors",
 			step,
 		)
 	}
 
 	if step > 255 {
-		return &p, fmt.Errorf(
+		return p, fmt.Errorf(
 			"step must be less than 256, got: %d. 255 is the greatest color increment possible",
 			step,
 		)
@@ -100,5 +100,5 @@ func RGBARainbow(step int) (*color.Palette, error) {
 		p = append(p, rgba)
 	}
 
-	return &p, nil
+	return p, nil
 }

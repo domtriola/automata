@@ -15,12 +15,12 @@ func TestRGBARainbow(t *testing.T) {
 		p, err := color.RGBARainbow(7)
 		require.NoError(t, err)
 
-		assert.Equal(t, 223, len(*p), "unexpected amount of colors")
+		assert.Equal(t, 223, len(p), "unexpected amount of colors")
 
 		p, err = color.RGBARainbow(255)
 		require.NoError(t, err)
 
-		assert.Equal(t, 7, len(*p), "unexpected amount of colors")
+		assert.Equal(t, 7, len(p), "unexpected amount of colors")
 	})
 
 	t.Run("RGBARainbow() returns an error for invalid step inputs", func(t *testing.T) {
