@@ -56,7 +56,7 @@ func TestCellularAutomata(t *testing.T) {
 
 	t.Run("CellularAutomata.DrawSpace() colors the given image", func(t *testing.T) {
 		o := models.NewOrganism(1)
-		o.Features.SpeciesID = 2
+		o.Features.SpeciesID = 4
 		space := &models.Space{
 			Organism: o,
 		}
@@ -65,11 +65,6 @@ func TestCellularAutomata(t *testing.T) {
 			color.RGBA{R: 2, G: 2, B: 2, A: 0},
 			color.RGBA{R: 3, G: 3, B: 3, A: 0},
 			color.RGBA{R: 4, G: 4, B: 4, A: 0},
-			color.RGBA{R: 5, G: 5, B: 5, A: 0},
-			color.RGBA{R: 6, G: 6, B: 6, A: 0},
-			color.RGBA{R: 7, G: 7, B: 7, A: 0},
-			color.RGBA{R: 8, G: 8, B: 8, A: 0},
-			color.RGBA{R: 9, G: 9, B: 9, A: 0},
 		}
 		img := image.NewPaletted(image.Rect(0, 0, 4, 4), p)
 		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
@@ -83,6 +78,6 @@ func TestCellularAutomata(t *testing.T) {
 
 		t.Log(img.At(1, 2))
 
-		assert.EqualValues(t, color.RGBA{R: 5, G: 5, B: 5, A: 0}, img.At(1, 2))
+		assert.EqualValues(t, color.RGBA{R: 4, G: 4, B: 4, A: 0}, img.At(1, 2))
 	})
 }
