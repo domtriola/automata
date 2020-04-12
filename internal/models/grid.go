@@ -61,7 +61,7 @@ func (g *Grid) GetSpace(x, y int) (*Space, error) {
 
 // DrawImage draws the current state of the grid into a paletted image
 func (g *Grid) DrawImage(s Simulation) *image.Paletted {
-	img := &image.Paletted{}
+	img := image.NewPaletted(image.Rect(0, 0, g.Width(), g.Height()), s.GetPalette())
 
 	for y, row := range g.Rows {
 		for x, space := range row {

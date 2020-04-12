@@ -71,7 +71,7 @@ func (s *CellularAutomata) DrawSpace(
 ) {
 	sci := speciesColorIndexes(img, s.cfg.nSpecies)
 
-	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID])
+	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID-1])
 }
 
 // GetPalette returns the simulation's color palette
