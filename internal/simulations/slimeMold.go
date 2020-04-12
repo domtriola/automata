@@ -52,7 +52,8 @@ func (s *SlimeMold) DrawSpace(
 	img *image.Paletted,
 	x int,
 	y int,
-) {
+) error {
+	return errors.New("DrawSpace not implemented")
 }
 
 // GetPalette returns the simulation's color palette

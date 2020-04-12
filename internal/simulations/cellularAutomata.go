@@ -2,6 +2,7 @@ package simulations
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"math/rand"
@@ -68,10 +69,16 @@ func (s *CellularAutomata) DrawSpace(
 	img *image.Paletted,
 	x int,
 	y int,
-) {
-	sci := speciesColorIndexes(img, s.cfg.nSpecies)
+) error {
+	colorIndex := sp.Organism.Features.SpeciesID - 1
 
-	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID-1])
+	if colorIndex < 0 || colorIndex > len(img.Palette) {
+		return fmt.Errorf("colorIndex: %d out of bounds of rect: %+v", colorIndex, img.Bounds())
+	}
+
+	img.SetColorIndex(x, y, uint8(colorIndex))
+
+	return nil
 }
 
 // GetPalette returns the simulation's color palette
@@ -79,19 +86,8 @@ func (s *CellularAutomata) GetPalette() color.Palette {
 	return s.palette
 }
 
-func speciesColorIndexes(img *image.Paletted, nSpecies int) []uint8 {
-	colorIndexes := []uint8{}
-	step := len(img.Palette) / nSpecies
-
-	for i := 0; i < nSpecies; i++ {
-		colorIndexes = append(colorIndexes, uint8(i*step))
-	}
-
-	return colorIndexes
-}
-
 func (s *CellularAutomata) setPalette() error {
-	p, err := createPalette()
+	p, err := createPalette(s.cfg.nSpecies)
 	if err != nil {
 		return err
 	}
@@ -101,6 +97,18 @@ func (s *CellularAutomata) setPalette() error {
 	return nil
 }
 
-func createPalette() (color.Palette, error) {
-	return ccolor.RGBARainbow(7)
+func createPalette(nSpecies int) (color.Palette, error) {
+	colors := color.Palette{}
+
+	rainbow, err := ccolor.RGBARainbow(7)
+	if err != nil {
+		return rainbow, err
+	}
+
+	step := len(rainbow) / nSpecies
+	for i := 0; i < nSpecies; i++ {
+		colors = append(colors, rainbow[i*step])
+	}
+
+	return colors, nil
 }

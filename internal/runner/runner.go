@@ -81,7 +81,11 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 
 	r.sim.InitializeGrid(r.grid)
 
-	images := r.Animate(r.grid)
+	images, err := r.Animate(r.grid)
+	if err != nil {
+		return "", err
+	}
+
 	g := buildGIF(images, r.cfg.GIF.Delay)
 
 	f, err := os.Create(filepath)
@@ -97,15 +101,18 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 }
 
 // Animate assembles all of the frames for the GIF
-func (r *Runner) Animate(g *models.Grid) []*image.Paletted {
+func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 	images := []*image.Paletted{}
 
 	for i := 0; i < r.cfg.NFrames; i++ {
-		img := g.DrawImage(r.sim)
+		img, err := g.DrawImage(r.sim)
+		if err != nil {
+			return images, err
+		}
 		images = append(images, img)
 	}
 
-	return images
+	return images, nil
 }
 
 func buildGIF(images []*image.Paletted, delay int) *gif.GIF {
