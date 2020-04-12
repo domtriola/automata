@@ -2,6 +2,8 @@ package simulations
 
 import (
 	"errors"
+	"image"
+	"image/color"
 
 	"github.com/domtriola/automata-gen/internal/models"
 )
@@ -16,7 +18,9 @@ type CellularAutomata struct {
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
 func NewCellularAutomata(cfg *models.SimulationConfig) *CellularAutomata {
-	return &CellularAutomata{}
+	return &CellularAutomata{
+		cfg: cfg,
+	}
 }
 
 // OutputFileName creates an output file path based on parameters of the
@@ -40,4 +44,29 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 // parameters.
 func (s *CellularAutomata) CalculateNextFrame(g *models.Grid) error {
 	return errors.New("CalculateNextFrame not implemented")
+}
+
+// DrawSpace colors the image at the specified location according to the
+// properties of the Space.
+func (s *CellularAutomata) DrawSpace(
+	sp *models.Space,
+	img *image.Paletted,
+	p *color.Palette,
+	x int,
+	y int,
+) {
+	sci := speciesColorIndexes(img, s.cfg.CellularAutomata.NSpecies)
+
+	img.SetColorIndex(x, y, sci[sp.Organism.Features.SpeciesID])
+}
+
+func speciesColorIndexes(img *image.Paletted, nSpecies int) []uint8 {
+	colorIndexes := []uint8{}
+	step := len(img.Palette) / nSpecies
+
+	for i := 0; i < nSpecies; i++ {
+		colorIndexes = append(colorIndexes, uint8(i*step))
+	}
+
+	return colorIndexes
 }
