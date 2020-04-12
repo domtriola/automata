@@ -1,6 +1,9 @@
 package models
 
-import "image/color"
+import (
+	"image"
+	"image/color"
+)
 
 // CellularAutomataType identifies the cellular automata simulation
 var CellularAutomataType = "cellular_automata"
@@ -13,6 +16,7 @@ type Simulation interface {
 	OutputFileName() (string, error)
 	InitializeGrid(g *Grid)
 	CalculateNextFrame(g *Grid) error
+	DrawSpace(sp *Space, img *image.Paletted, x int, y int)
 	GetPalette() color.Palette
 }
 

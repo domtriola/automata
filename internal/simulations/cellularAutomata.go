@@ -54,7 +54,6 @@ func (s *CellularAutomata) CalculateNextFrame(g *models.Grid) error {
 func (s *CellularAutomata) DrawSpace(
 	sp *models.Space,
 	img *image.Paletted,
-	p *color.Palette,
 	x int,
 	y int,
 ) {

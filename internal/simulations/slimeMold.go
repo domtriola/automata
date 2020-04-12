@@ -2,6 +2,7 @@ package simulations
 
 import (
 	"errors"
+	"image"
 	"image/color"
 	"log"
 
@@ -37,6 +38,16 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) {
 // parameters.
 func (s *SlimeMold) CalculateNextFrame(g *models.Grid) error {
 	return errors.New("CalculateNextFrame not implemented")
+}
+
+// DrawSpace colors the image at the specified location according to the
+// properties of the Space.
+func (s *SlimeMold) DrawSpace(
+	sp *models.Space,
+	img *image.Paletted,
+	x int,
+	y int,
+) {
 }
 
 // GetPalette returns the simulation's color palette

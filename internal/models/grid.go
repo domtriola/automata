@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"image"
-	"image/color"
 )
 
 // Grid represents the simulation area. It contains Spaces that organisms occupy
@@ -61,6 +60,14 @@ func (g *Grid) GetSpace(x, y int) (*Space, error) {
 }
 
 // DrawImage draws the current state of the grid into a paletted image
-func (g *Grid) DrawImage(p color.Palette) *image.Paletted {
-	return &image.Paletted{}
+func (g *Grid) DrawImage(s Simulation) *image.Paletted {
+	img := &image.Paletted{}
+
+	for y, row := range g.Rows {
+		for x, space := range row {
+			s.DrawSpace(space, img, x, y)
+		}
+	}
+
+	return img
 }

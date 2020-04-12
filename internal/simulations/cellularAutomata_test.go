@@ -53,7 +53,7 @@ func TestCellularAutomata(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		s.DrawSpace(space, img, &p, 1, 2)
+		s.DrawSpace(space, img, 1, 2)
 
 		t.Log(img.At(1, 2))
 

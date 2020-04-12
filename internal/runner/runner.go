@@ -101,7 +101,8 @@ func (r *Runner) Animate(g *models.Grid) []*image.Paletted {
 	images := []*image.Paletted{}
 
 	for i := 0; i < r.cfg.NFrames; i++ {
-		g.DrawImage(r.sim.GetPalette())
+		img := g.DrawImage(r.sim)
+		images = append(images, img)
 	}
 
 	return images
