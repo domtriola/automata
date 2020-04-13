@@ -39,10 +39,10 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) {
 	log.Println(g)
 }
 
-// CalculateNextFrame determines and assigns the next state of each organism's
+// AdvanceFrame determines and assigns the next state of each organism's
 // parameters.
-func (s *SlimeMold) CalculateNextFrame(g *models.Grid) error {
-	return errors.New("CalculateNextFrame not implemented")
+func (s *SlimeMold) AdvanceFrame(g *models.Grid) error {
+	return errors.New("AdvanceFrame not implemented")
 }
 
 // DrawSpace colors the image at the specified location according to the

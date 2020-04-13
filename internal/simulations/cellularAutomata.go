@@ -56,10 +56,10 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 	}
 }
 
-// CalculateNextFrame determines and assigns the next state of each organism's
+// AdvanceFrame determines and assigns the next state of each organism's
 // parameters.
-func (s *CellularAutomata) CalculateNextFrame(g *models.Grid) error {
-	return errors.New("CalculateNextFrame not implemented")
+func (s *CellularAutomata) AdvanceFrame(g *models.Grid) error {
+	return errors.New("AdvanceFrame not implemented")
 }
 
 // DrawSpace colors the image at the specified location according to the
