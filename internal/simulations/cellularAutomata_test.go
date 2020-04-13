@@ -66,7 +66,7 @@ func TestCellularAutomata(t *testing.T) {
 			color.RGBA{R: 3, G: 3, B: 3, A: 0},
 			color.RGBA{R: 4, G: 4, B: 4, A: 0},
 		}
-		img := image.NewPaletted(image.Rect(0, 0, 4, 4), p)
+		img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
 		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
 			CellularAutomata: &models.CellularAutomataConfig{
 				NSpecies: 4,
@@ -74,10 +74,33 @@ func TestCellularAutomata(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		s.DrawSpace(space, img, 1, 2)
-
-		t.Log(img.At(1, 2))
+		err = s.DrawSpace(space, img, 1, 2)
+		require.NoError(t, err)
 
 		assert.EqualValues(t, color.RGBA{R: 4, G: 4, B: 4, A: 0}, img.At(1, 2))
+	})
+
+	t.Run("CellularAutomata.DrawSpace() returns an error if color index is out of bounds", func(t *testing.T) {
+		o := models.NewOrganism(1)
+		o.Features.SpeciesID = 6
+		space := &models.Space{
+			Organism: o,
+		}
+		p := color.Palette{
+			color.RGBA{R: 1, G: 1, B: 1, A: 0},
+			color.RGBA{R: 2, G: 2, B: 2, A: 0},
+			color.RGBA{R: 3, G: 3, B: 3, A: 0},
+			color.RGBA{R: 4, G: 4, B: 4, A: 0},
+		}
+		img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
+		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
+			CellularAutomata: &models.CellularAutomataConfig{
+				NSpecies: 4,
+			},
+		})
+		require.NoError(t, err)
+
+		err = s.DrawSpace(space, img, 1, 2)
+		require.Error(t, err)
 	})
 }
