@@ -39,6 +39,7 @@ func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error
 // OutputFileName creates an output file path based on parameters of the
 // simulation
 func (s *CellularAutomata) OutputFileName() (string, error) {
+	// TODODOM: change to use output cli var or default to tmp/{config_params}.gif
 	return "TODODOM.gif", nil
 }
 
