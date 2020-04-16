@@ -49,7 +49,7 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 	for _, row := range g.Rows {
 		for _, space := range row {
 			o := models.NewOrganism(oID)
-			o.Features.SpeciesID = 1 + rand.Intn(s.cfg.nSpecies)
+			o.CAFeatures.SpeciesID = 1 + rand.Intn(s.cfg.nSpecies)
 
 			space.Organism = o
 			oID++
@@ -60,7 +60,22 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 // AdvanceFrame determines and assigns the next state of each organism's
 // parameters.
 func (s *CellularAutomata) AdvanceFrame(g *models.Grid) error {
+	s.calculateNextFrame(g)
+	s.applyNextFrame(g)
+
 	return errors.New("AdvanceFrame not implemented")
+}
+
+func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
+
+}
+
+func (s *CellularAutomata) applyNextFrame(g *models.Grid) {
+	for _, row := range g.Rows {
+		for _, space := range row {
+			space.Organism.CAFeatures.SpeciesID = space.Organism.CAFeatures.NextSpeciesID
+		}
+	}
 }
 
 // DrawSpace colors the image at the specified location according to the
@@ -71,7 +86,7 @@ func (s *CellularAutomata) DrawSpace(
 	x int,
 	y int,
 ) error {
-	colorIndex := sp.Organism.Features.SpeciesID - 1
+	colorIndex := sp.Organism.CAFeatures.SpeciesID - 1
 
 	if colorIndex < 0 || colorIndex > len(img.Palette) {
 		return fmt.Errorf("colorIndex: %d out of bounds of rect: %+v", colorIndex, img.Bounds())

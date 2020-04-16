@@ -48,15 +48,15 @@ func TestCellularAutomata(t *testing.T) {
 		for _, row := range g.Rows {
 			for _, space := range row {
 				assert.NotNil(t, space.Organism, "unexpected empty space")
-				assert.NotZero(t, space.Organism.Features.SpeciesID, "unexpected species id")
-				assert.LessOrEqual(t, space.Organism.Features.SpeciesID, nSpecies, "unexpected species id")
+				assert.NotZero(t, space.Organism.CAFeatures.SpeciesID, "unexpected species id")
+				assert.LessOrEqual(t, space.Organism.CAFeatures.SpeciesID, nSpecies, "unexpected species id")
 			}
 		}
 	})
 
 	t.Run("CellularAutomata.DrawSpace() colors the given image", func(t *testing.T) {
 		o := models.NewOrganism(1)
-		o.Features.SpeciesID = 4
+		o.CAFeatures.SpeciesID = 4
 		space := &models.Space{
 			Organism: o,
 		}
@@ -82,7 +82,7 @@ func TestCellularAutomata(t *testing.T) {
 
 	t.Run("CellularAutomata.DrawSpace() returns an error if color index is out of bounds", func(t *testing.T) {
 		o := models.NewOrganism(1)
-		o.Features.SpeciesID = 6
+		o.CAFeatures.SpeciesID = 6
 		space := &models.Space{
 			Organism: o,
 		}
