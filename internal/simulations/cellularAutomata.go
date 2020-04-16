@@ -43,7 +43,7 @@ func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error
 // simulation
 func (s *CellularAutomata) OutputFileName() (string, error) {
 	// TODODOM: change to use output cli var or default to tmp/{config_params}.gif
-	return "TODODOMasdf.gif", nil
+	return "TODODOM.gif", nil
 }
 
 // InitializeGrid instantiates a grid
@@ -85,7 +85,6 @@ func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
 		for _, space := range row {
 			predatorCount := 0
 
-			// TODODOM: why aren't pDirs being honored?
 			for _, n := range space.Organism.CAFeatures.Neighbors {
 				if s.predator(n, space.Organism) {
 					predatorCount++

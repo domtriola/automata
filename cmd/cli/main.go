@@ -13,7 +13,7 @@ import (
 
 const (
 	// General
-	defaultOutputPath = "/tmp"
+	defaultOutputPath = "tmp/"
 	defaultWidth      = 500
 	defaultHeight     = 500
 	defaultNFrames    = 100
