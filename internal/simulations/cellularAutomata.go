@@ -1,7 +1,6 @@
 package simulations
 
 import (
-	"errors"
 	"fmt"
 	"image"
 	"image/color"
@@ -23,13 +22,15 @@ type CellularAutomata struct {
 // CellularAutomataConfig holds the configurations for the cellular automata
 // simulation
 type CellularAutomataConfig struct {
-	nSpecies int
+	nSpecies          int
+	predatorThreshold int
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
 func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error) {
 	s := &CellularAutomata{cfg: CellularAutomataConfig{
-		nSpecies: cfg.CellularAutomata.NSpecies,
+		nSpecies:          cfg.CellularAutomata.NSpecies,
+		predatorThreshold: cfg.CellularAutomata.PredatorThreshold,
 	}}
 	err := s.setPalette()
 
@@ -63,17 +64,42 @@ func (s *CellularAutomata) AdvanceFrame(g *models.Grid) error {
 	s.calculateNextFrame(g)
 	s.applyNextFrame(g)
 
-	return errors.New("AdvanceFrame not implemented")
+	return nil
 }
 
 func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
+	for y, row := range g.Rows {
+		for x, space := range row {
+			predatorCount := 0
 
+			for _, n := range g.GetNeighbors(x, y) {
+				if s.predator(n.Organism, space.Organism) {
+					predatorCount++
+				}
+			}
+
+			if predatorCount >= s.cfg.predatorThreshold {
+				s.incrementNextSpeciesID(space.Organism)
+			}
+		}
+	}
+}
+
+func (s *CellularAutomata) incrementNextSpeciesID(o *models.Organism) {
+	o.CAFeatures.NextSpeciesID = o.CAFeatures.SpeciesID%s.cfg.nSpecies + 1
+}
+
+func (s *CellularAutomata) predator(neighbor *models.Organism, o *models.Organism) bool {
+	return neighbor.CAFeatures.SpeciesID == o.CAFeatures.SpeciesID%s.cfg.nSpecies+1
 }
 
 func (s *CellularAutomata) applyNextFrame(g *models.Grid) {
 	for _, row := range g.Rows {
 		for _, space := range row {
-			space.Organism.CAFeatures.SpeciesID = space.Organism.CAFeatures.NextSpeciesID
+			if space.Organism.CAFeatures.NextSpeciesID > 0 {
+				space.Organism.CAFeatures.SpeciesID = space.Organism.CAFeatures.NextSpeciesID
+				space.Organism.CAFeatures.NextSpeciesID = 0
+			}
 		}
 	}
 }

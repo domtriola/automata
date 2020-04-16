@@ -32,6 +32,10 @@ type SimulationConfig struct {
 type CellularAutomataConfig struct {
 	// NSpecies is the number of different types of species that exist
 	NSpecies int
+
+	// PredatorThreshold is the amount of neighboring predators cells it takes
+	// to eat a prey cell
+	PredatorThreshold int
 }
 
 // SlimeMoldConfig are options specific to the cellular automata simulation

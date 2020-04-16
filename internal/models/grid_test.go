@@ -5,7 +5,6 @@ import (
 
 	"github.com/domtriola/automata/internal/models"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGrid(t *testing.T) {
@@ -55,16 +54,16 @@ func TestGrid(t *testing.T) {
 		y := 5
 		x := 8
 		g.Rows[y][x] = space
-		found, err := g.GetSpace(x, y)
-		require.NoError(t, err)
+		found, ok := g.GetSpace(x, y)
+		assert.True(t, ok)
 
 		assert.Same(t, space, found, "unexpected space found")
 	})
 
-	t.Run("GetSpace() returns an error if the coords are out of bounds", func(t *testing.T) {
+	t.Run("GetSpace() returns false if the coords are out of bounds", func(t *testing.T) {
 		g := models.NewGrid(10, 15)
 
-		_, err := g.GetSpace(20, 25)
-		require.Error(t, err)
+		_, ok := g.GetSpace(20, 25)
+		assert.False(t, ok)
 	})
 }

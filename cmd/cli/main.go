@@ -14,6 +14,7 @@ type args struct {
 	width      int
 	height     int
 	nFrames    int
+	pThreshold int
 
 	// Cellular Automata
 	nSpecies int
@@ -54,6 +55,7 @@ func collectArgs() *args {
 	height := flag.Int("height", 500, "The height of the simulation grid")
 	nFrames := flag.Int("nFrames", 100, "The number of frames the simulation generates")
 	nSpecies := flag.Int("nSpecies", 3, "The number of species types in a cellular automata simulation")
+	pThreshold := flag.Int("pThreshold", 3, "The number of neighboring predator cells it takes to eat a prey cell in a cellular automata simulation")
 	flag.Parse()
 
 	return &args{
@@ -63,6 +65,7 @@ func collectArgs() *args {
 		height:     *height,
 		nFrames:    *nFrames,
 		nSpecies:   *nSpecies,
+		pThreshold: *pThreshold,
 	}
 }
 
@@ -72,7 +75,8 @@ func assembleSimConfig(a *args) *models.SimulationConfig {
 	switch a.sim {
 	case models.CellularAutomataType:
 		cfg.CellularAutomata = &models.CellularAutomataConfig{
-			NSpecies: a.nSpecies,
+			NSpecies:          a.nSpecies,
+			PredatorThreshold: a.pThreshold,
 		}
 	case models.SlimeMoldType:
 		cfg.SlimeMold = &models.SlimeMoldConfig{}

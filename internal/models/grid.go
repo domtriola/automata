@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"image"
 )
 
@@ -50,13 +49,38 @@ func (g *Grid) HasCoord(x, y int) bool {
 	return x >= 0 && x < g.Width() && y >= 0 && y < g.Height()
 }
 
-// GetSpace returns the Space that resides at a given coordinate.
-func (g *Grid) GetSpace(x, y int) (*Space, error) {
+// GetSpace returns the Space that resides at a given coordinate if the
+// coordinate exists in the grid
+func (g *Grid) GetSpace(x, y int) (*Space, bool) {
 	if !g.HasCoord(x, y) {
-		return &Space{}, fmt.Errorf("grid does not contain coord: %d, %d", x, y)
+		return &Space{}, false
 	}
 
-	return g.Rows[y][x], nil
+	return g.Rows[y][x], true
+}
+
+// GetNeighbors finds and returns all of the spaces that are adjacent to the
+// given coordinates
+func (g *Grid) GetNeighbors(x, y int) []*Space {
+	neighbors := []*Space{}
+	dirs := [][]int{
+		[]int{-1, -1},
+		[]int{-1, 0},
+		[]int{-1, 1},
+		[]int{0, 1},
+		[]int{1, 1},
+		[]int{1, 0},
+		[]int{1, -1},
+		[]int{0, -1},
+	}
+
+	for _, d := range dirs {
+		if s, ok := g.GetSpace(x+d[0], y+d[1]); ok {
+			neighbors = append(neighbors, s)
+		}
+	}
+
+	return neighbors
 }
 
 // DrawImage draws the current state of the grid into a paletted image
