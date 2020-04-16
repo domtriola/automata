@@ -61,21 +61,13 @@ func (g *Grid) GetSpace(x, y int) (*Space, bool) {
 
 // GetNeighbors finds and returns all of the spaces that are adjacent to the
 // given coordinates
-func (g *Grid) GetNeighbors(x, y int) []*Space {
+func (g *Grid) GetNeighbors(x, y int, dirs []string) []*Space {
 	neighbors := []*Space{}
-	dirs := [][]int{
-		[]int{-1, -1},
-		[]int{-1, 0},
-		[]int{-1, 1},
-		[]int{0, 1},
-		[]int{1, 1},
-		[]int{1, 0},
-		[]int{1, -1},
-		[]int{0, -1},
-	}
 
-	for _, d := range dirs {
-		if s, ok := g.GetSpace(x+d[0], y+d[1]); ok {
+	coords := cardinalDirsToRelativeCoords(dirs)
+
+	for _, coord := range coords {
+		if s, ok := g.GetSpace(x+coord[0], y+coord[1]); ok {
 			neighbors = append(neighbors, s)
 		}
 	}
@@ -97,4 +89,27 @@ func (g *Grid) DrawImage(s Simulation) (*image.Paletted, error) {
 	}
 
 	return img, nil
+}
+
+func cardinalDirsToRelativeCoords(dirs []string) [][]int {
+	dirsToCoords := map[string][]int{
+		"sw": []int{-1, -1},
+		"w":  []int{-1, 0},
+		"nw": []int{-1, 1},
+		"n":  []int{0, 1},
+		"ne": []int{1, 1},
+		"e":  []int{1, 0},
+		"se": []int{1, -1},
+		"s":  []int{0, -1},
+	}
+
+	coords := [][]int{}
+
+	for _, dir := range dirs {
+		if coord, ok := dirsToCoords[dir]; ok {
+			coords = append(coords, coord)
+		}
+	}
+
+	return coords
 }

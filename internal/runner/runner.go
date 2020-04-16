@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/gif"
+	"log"
 	"os"
 	"strings"
 
@@ -103,6 +104,7 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 // Animate assembles all of the frames for the GIF
 func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 	images := []*image.Paletted{}
+	frameCount := 0
 
 	for i := 0; i < r.cfg.NFrames; i++ {
 		img, err := g.DrawImage(r.sim)
@@ -113,6 +115,11 @@ func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 
 		if err := r.sim.AdvanceFrame(g); err != nil {
 			return images, err
+		}
+
+		frameCount++
+		if frameCount%10 == 0 {
+			log.Printf("%d frames created", frameCount)
 		}
 	}
 

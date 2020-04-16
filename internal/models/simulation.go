@@ -36,6 +36,10 @@ type CellularAutomataConfig struct {
 	// PredatorThreshold is the amount of neighboring predators cells it takes
 	// to eat a prey cell
 	PredatorThreshold int
+
+	// PredatorDirs contains the cardinal directions that predators may attack
+	// prey cells from
+	PredatorDirs []string
 }
 
 // SlimeMoldConfig are options specific to the cellular automata simulation

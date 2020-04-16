@@ -18,6 +18,9 @@ type CAFeatures struct {
 	// SpeciesID identifies the species type of a cell
 	SpeciesID     int
 	NextSpeciesID int
+
+	// Neighbors stores pointers to an organism's neighbors
+	Neighbors []*Organism
 }
 
 // SMFeatures holds features that are unique to the slime mold simulation.

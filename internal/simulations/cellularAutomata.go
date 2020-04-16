@@ -24,6 +24,7 @@ type CellularAutomata struct {
 type CellularAutomataConfig struct {
 	nSpecies          int
 	predatorThreshold int
+	predatorDirs      []string
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
@@ -31,6 +32,7 @@ func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error
 	s := &CellularAutomata{cfg: CellularAutomataConfig{
 		nSpecies:          cfg.CellularAutomata.NSpecies,
 		predatorThreshold: cfg.CellularAutomata.PredatorThreshold,
+		predatorDirs:      cfg.CellularAutomata.PredatorDirs,
 	}}
 	err := s.setPalette()
 
@@ -41,7 +43,7 @@ func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error
 // simulation
 func (s *CellularAutomata) OutputFileName() (string, error) {
 	// TODODOM: change to use output cli var or default to tmp/{config_params}.gif
-	return "TODODOM.gif", nil
+	return "TODODOMasdf.gif", nil
 }
 
 // InitializeGrid instantiates a grid
@@ -56,6 +58,17 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 			oID++
 		}
 	}
+
+	for y, row := range g.Rows {
+		for x, space := range row {
+			for _, ns := range g.GetNeighbors(x, y, s.cfg.predatorDirs) {
+				space.Organism.CAFeatures.Neighbors = append(
+					space.Organism.CAFeatures.Neighbors,
+					ns.Organism,
+				)
+			}
+		}
+	}
 }
 
 // AdvanceFrame determines and assigns the next state of each organism's
@@ -68,12 +81,13 @@ func (s *CellularAutomata) AdvanceFrame(g *models.Grid) error {
 }
 
 func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
-	for y, row := range g.Rows {
-		for x, space := range row {
+	for _, row := range g.Rows {
+		for _, space := range row {
 			predatorCount := 0
 
-			for _, n := range g.GetNeighbors(x, y) {
-				if s.predator(n.Organism, space.Organism) {
+			// TODODOM: why aren't pDirs being honored?
+			for _, n := range space.Organism.CAFeatures.Neighbors {
+				if s.predator(n, space.Organism) {
 					predatorCount++
 				}
 			}
