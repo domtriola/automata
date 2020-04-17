@@ -2,7 +2,7 @@
 
 ## Dev Setup
 
-Prerequisites: [xcode](https://developer.apple.com/library/archive/technotes/tn2339/_index.html), [go](https://golang.org/doc/install), [golangci-lint](https://github.com/golangci/golangci-lint)
+Prerequisites: [xcode](https://developer.apple.com/library/archive/technotes/tn2339/_index.html) (if mac), [go](https://golang.org/doc/install), [golangci-lint](https://github.com/golangci/golangci-lint)
 
 ### Install
 
@@ -14,6 +14,7 @@ go get github.com/domtriola/automata
 
 * All tests: `make test`
 * Unit tests: `make unit`
+* Integration tests: `make integration`
 * Lint tests: `make lint`
 
 ## Generating Simulations

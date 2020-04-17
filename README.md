@@ -10,12 +10,14 @@ Automata is a tool to generate automata simulations.
 
 Install: `go get github.com/domtriola/automata`
 
+Generate example: `make example`
+
 [Workflow](docs/workflow.md)
 
 ## Example
 
 Example generated from 5 species that can hunt in all directions:
 
-![Automata Example Animation](static/examples/5s3tnw-n-ne-e-se-s-sw-w.gif)
+![Automata Example Animation](assets/examples/5s3tnw-n-ne-e-se-s-sw-w.gif)
 
 [More Examples](assets/examples)
