@@ -93,14 +93,14 @@ func (g *Grid) DrawImage(s Simulation) (*image.Paletted, error) {
 
 func cardinalDirsToRelativeCoords(dirs []string) [][]int {
 	dirsToCoords := map[string][]int{
-		"sw": {-1, -1},
+		"sw": {-1, 1},
 		"w":  {-1, 0},
-		"nw": {-1, 1},
-		"n":  {0, 1},
-		"ne": {1, 1},
+		"nw": {-1, -1},
+		"n":  {0, -1},
+		"ne": {1, -1},
 		"e":  {1, 0},
-		"se": {1, -1},
-		"s":  {0, -1},
+		"se": {1, 1},
+		"s":  {0, 1},
 	}
 
 	coords := [][]int{}

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCellularAutomata(t *testing.T) {
+func TestCellularAutomataInitialize(t *testing.T) {
 	t.Parallel()
 
 	t.Run("CellularAutomata.Initialize() fills every space with a cell", func(t *testing.T) {
@@ -53,6 +53,10 @@ func TestCellularAutomata(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestCellularAutomataDraw(t *testing.T) {
+	t.Parallel()
 
 	t.Run("CellularAutomata.DrawSpace() colors the given image", func(t *testing.T) {
 		o := models.NewOrganism(1)
@@ -102,5 +106,64 @@ func TestCellularAutomata(t *testing.T) {
 
 		err = s.DrawSpace(space, img, 1, 2)
 		require.Error(t, err)
+	})
+}
+
+func TestCellularAutomataAdvanceFrame(t *testing.T) {
+	t.Parallel()
+
+	t.Run("AdvanceFrame() keeps cells the same if no successful predators", func(t *testing.T) {
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
+				NSpecies:          4,
+				PredatorThreshold: 2,
+				PredatorDirs:      []string{"nw", "n", "ne"},
+			},
+		})
+		require.NoError(t, err)
+
+		g := models.NewGrid(4, 4)
+		s.InitializeGrid(g)
+		for _, row := range g.Rows {
+			for _, space := range row {
+				space.Organism.CAFeatures.SpeciesID = 1
+			}
+		}
+
+		err = s.AdvanceFrame(g)
+		require.NoError(t, err)
+
+		for _, row := range g.Rows {
+			for _, space := range row {
+				assert.Equal(t, 1, space.Organism.CAFeatures.SpeciesID)
+			}
+		}
+	})
+
+	t.Run("AdvanceFrame() changes cell states if predators are successful", func(t *testing.T) {
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
+				NSpecies:          4,
+				PredatorThreshold: 2,
+				PredatorDirs:      []string{"nw", "n", "ne"},
+			},
+		})
+		require.NoError(t, err)
+
+		g := models.NewGrid(2, 2)
+		s.InitializeGrid(g)
+		g.Rows[0][0].Organism.CAFeatures.SpeciesID = 2
+		g.Rows[0][1].Organism.CAFeatures.SpeciesID = 2
+		g.Rows[1][0].Organism.CAFeatures.SpeciesID = 1
+		g.Rows[1][1].Organism.CAFeatures.SpeciesID = 1
+
+		err = s.AdvanceFrame(g)
+		require.NoError(t, err)
+
+		for _, row := range g.Rows {
+			for _, space := range row {
+				assert.Equal(t, 2, space.Organism.CAFeatures.SpeciesID)
+			}
+		}
 	})
 }

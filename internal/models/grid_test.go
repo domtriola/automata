@@ -67,3 +67,49 @@ func TestGrid(t *testing.T) {
 		assert.False(t, ok)
 	})
 }
+
+func TestGridGetNeighbors(t *testing.T) {
+	t.Parallel()
+
+	t.Run("GetNeighbors() returns the correct neighbors", func(t *testing.T) {
+		spaceA := &models.Space{}
+		spaceB := &models.Space{}
+		spaceC := &models.Space{}
+		spaceD := &models.Space{}
+		spaceE := &models.Space{}
+		spaceF := &models.Space{}
+		spaceG := &models.Space{}
+		spaceH := &models.Space{}
+		spaceI := &models.Space{}
+
+		g := models.NewGrid(3, 3)
+
+		// A B C
+		// D E F
+		// G H I
+		g.Rows[0][0] = spaceA
+		g.Rows[0][1] = spaceB
+		g.Rows[0][2] = spaceC
+		g.Rows[1][0] = spaceD
+		g.Rows[1][1] = spaceE
+		g.Rows[1][2] = spaceF
+		g.Rows[2][0] = spaceG
+		g.Rows[2][1] = spaceH
+		g.Rows[2][2] = spaceI
+
+		noNeighbors := g.GetNeighbors(0, 0, []string{"n", "nw", "w", "ne", "sw"})
+		assert.Empty(t, noNeighbors)
+
+		allNeighbors := g.GetNeighbors(1, 1, []string{"n", "ne", "e", "se", "s", "sw", "w", "nw"})
+		assert.Equal(t, 8, len(allNeighbors))
+
+		someNeighbors := g.GetNeighbors(1, 1, []string{"n", "sw", "w", "nw"})
+		assert.Equal(t, 4, len(someNeighbors))
+
+		h := g.GetNeighbors(0, 1, []string{"se"})
+		assert.Same(t, spaceH, h[0])
+
+		e := g.GetNeighbors(2, 2, []string{"nw"})
+		assert.Same(t, spaceE, e[0])
+	})
+}
