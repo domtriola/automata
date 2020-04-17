@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/domtriola/automata/internal/models"
 	"github.com/domtriola/automata/internal/runner"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -34,6 +35,26 @@ type args struct {
 
 	// Cellular Automata
 	nSpecies int
+}
+
+func init() {
+	logLevels := map[string]log.Level{
+		"fatal": log.FatalLevel,
+		"error": log.ErrorLevel,
+		"warn":  log.WarnLevel,
+		"info":  log.InfoLevel,
+		"debug": log.DebugLevel,
+	}
+
+	log.SetFormatter(&log.TextFormatter{})
+	log.SetOutput(os.Stdout)
+
+	envLevel := os.Getenv("LOG_LEVEL")
+	if l, ok := logLevels[envLevel]; ok {
+		log.SetLevel(l)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
 }
 
 func main() {

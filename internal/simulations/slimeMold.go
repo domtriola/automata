@@ -4,9 +4,9 @@ import (
 	"errors"
 	"image"
 	"image/color"
-	"log"
 
 	"github.com/domtriola/automata/internal/models"
+	log "github.com/sirupsen/logrus"
 )
 
 var _ models.Simulation = &SlimeMold{}

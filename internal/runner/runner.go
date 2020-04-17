@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"image"
 	"image/gif"
-	"log"
 	"os"
 
 	"github.com/domtriola/automata/internal/models"
 	"github.com/domtriola/automata/internal/simulations"
+	log "github.com/sirupsen/logrus"
 )
 
 const defaultOutDir = "tmp"
@@ -117,7 +117,8 @@ func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 
 		frameCount++
 		if frameCount%10 == 0 {
-			log.Printf("%d frames created", frameCount)
+			// log.Debugf("%d frames created", frameCount)
+			log.WithField("frameCount", frameCount).Debug("frames created")
 		}
 	}
 
