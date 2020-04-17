@@ -1,6 +1,7 @@
 # Automata Generator
 
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/domtriola/automata)
+[![Go Report Card](https://goreportcard.com/badge/github.com/domtriola/automata)](https://goreportcard.com/report/github.com/domtriola/automata)
 
 [Project Layout](https://github.com/golang-standards/project-layout)
 
