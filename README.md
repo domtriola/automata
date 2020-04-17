@@ -1,8 +1,21 @@
 # Automata Generator
 
-Install: `go get github.com/domtriola/automata-gen`
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/domtriola/automata)
 
-Example output: http://localhost:8000/gen?width=400&height=400&nFrames=800&delay=2&nSpecies=5&threshold=3
+[Project Layout](https://github.com/golang-standards/project-layout)
+
+Automata is a tool to generate automata simulations.
+
+## Setup
+
+Install: `go get github.com/domtriola/automata`
+
+[Workflow](docs/workflow.md)
+
+## Example
+
+Example generated from 5 species that can hunt in all directions:
+
 ![Automata Example Animation](static/examples/5s3tnw-n-ne-e-se-s-sw-w.gif)
 
-[More Examples](static/examples)
+[More Examples](assets/examples)
