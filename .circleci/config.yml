@@ -23,5 +23,5 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
-      - run: go get -v -t -d ./...
+      - run: GO111MODULE=on go get -v -t -d ./...
       - run: make test
