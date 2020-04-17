@@ -73,15 +73,9 @@ func New(simType string, cfg *Config) (Runner, error) {
 
 // CreateGIF creates the simulation
 func (r *Runner) CreateGIF() (filepath string, err error) {
-	filename, err := r.sim.OutputFileName()
+	filepath, err = r.getFilePath()
 	if err != nil {
 		return "", err
-	}
-
-	if len(r.cfg.Output.Path) > 0 {
-		filepath = r.cfg.Output.Path
-	} else {
-		filepath = fmt.Sprintf("%s/%s", defaultOutDir, filename)
 	}
 
 	r.sim.InitializeGrid(r.grid)
@@ -139,4 +133,27 @@ func buildGIF(images []*image.Paletted, delay int) *gif.GIF {
 	}
 
 	return g
+}
+
+func (r *Runner) getFilePath() (filepath string, err error) {
+	if len(r.cfg.Output.Path) > 0 {
+		filepath = r.cfg.Output.Path
+	} else {
+		simName, err := r.sim.OutputName()
+		if err != nil {
+			return "", err
+		}
+
+		filename := fmt.Sprintf(
+			"%s_%d_%d_%d.gif",
+			simName,
+			r.cfg.Width,
+			r.cfg.Height,
+			r.cfg.NFrames,
+		)
+
+		filepath = fmt.Sprintf("%s/%s", defaultOutDir, filename)
+	}
+
+	return filepath, nil
 }

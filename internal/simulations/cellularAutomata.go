@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"math/rand"
+	"strings"
 
 	"github.com/domtriola/automata/internal/models"
 	ccolor "github.com/domtriola/automata/pkg/color"
@@ -39,11 +40,17 @@ func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error
 	return s, err
 }
 
-// OutputFileName creates an output file path based on parameters of the
+// OutputName creates an output file path based on parameters of the
 // simulation
-func (s *CellularAutomata) OutputFileName() (string, error) {
-	// TODODOM: change to use output cli var or default to tmp/{config_params}.gif
-	return "TODODOM.gif", nil
+func (s *CellularAutomata) OutputName() (string, error) {
+	filename := fmt.Sprintf(
+		"%d_%d_%s",
+		s.cfg.nSpecies,
+		s.cfg.predatorThreshold,
+		strings.Join(s.cfg.predatorDirs, ""),
+	)
+
+	return filename, nil
 }
 
 // InitializeGrid instantiates a grid

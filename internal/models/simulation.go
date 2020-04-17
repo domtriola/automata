@@ -13,7 +13,7 @@ var SlimeMoldType = "slime_mold"
 
 // Simulation is the interface that all simulations must follow
 type Simulation interface {
-	OutputFileName() (string, error)
+	OutputName() (string, error)
 	InitializeGrid(g *Grid)
 	AdvanceFrame(g *Grid) error
 	DrawSpace(sp *Space, img *image.Paletted, x int, y int) error

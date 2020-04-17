@@ -28,10 +28,10 @@ func NewSlimeMold(cfg *models.SimulationConfig) *SlimeMold {
 	return &SlimeMold{}
 }
 
-// OutputFileName creates an output file path based on parameters of the
+// OutputName creates an output file path based on parameters of the
 // simulation
-func (s *SlimeMold) OutputFileName() (string, error) {
-	return "", errors.New("OutputFileName not implemented")
+func (s *SlimeMold) OutputName() (string, error) {
+	return "", errors.New("OutputName not implemented")
 }
 
 // InitializeGrid instantiates a grid
