@@ -15,7 +15,7 @@ const defaultOutDir = "tmp"
 
 // Runner is responsible for instantiating and running a simulation.
 type Runner struct {
-	cfg  *Config
+	cfg  Config
 	sim  models.Simulation
 	grid *models.Grid
 }
@@ -31,9 +31,9 @@ type Config struct {
 	// NFrames is the amount of frames that will be built
 	NFrames int
 
-	Simulation *models.SimulationConfig
-	Output     *OutputConfig
-	GIF        *GIFConfig
+	Simulation models.SimulationConfig
+	Output     OutputConfig
+	GIF        GIFConfig
 }
 
 // OutputConfig holds configs for the output of the simulation
@@ -48,7 +48,7 @@ type GIFConfig struct {
 }
 
 // New creates a new instance for Runner
-func New(simType string, cfg *Config) (Runner, error) {
+func New(simType string, cfg Config) (Runner, error) {
 	var err error
 
 	r := Runner{

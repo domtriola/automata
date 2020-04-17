@@ -24,7 +24,7 @@ type SlimeMoldConfig struct {
 }
 
 // NewSlimeMold initializes and returns a new slime mold simulation
-func NewSlimeMold(cfg *models.SimulationConfig) *SlimeMold {
+func NewSlimeMold(cfg models.SimulationConfig) *SlimeMold {
 	return &SlimeMold{}
 }
 

@@ -29,7 +29,7 @@ type CellularAutomataConfig struct {
 }
 
 // NewCellularAutomata initializes and returns a new cellular automata simulation
-func NewCellularAutomata(cfg *models.SimulationConfig) (*CellularAutomata, error) {
+func NewCellularAutomata(cfg models.SimulationConfig) (*CellularAutomata, error) {
 	s := &CellularAutomata{cfg: CellularAutomataConfig{
 		nSpecies:          cfg.CellularAutomata.NSpecies,
 		predatorThreshold: cfg.CellularAutomata.PredatorThreshold,

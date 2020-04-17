@@ -16,8 +16,8 @@ func TestCellularAutomata(t *testing.T) {
 
 	t.Run("CellularAutomata.Initialize() fills every space with a cell", func(t *testing.T) {
 		g := models.NewGrid(4, 4)
-		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
-			CellularAutomata: &models.CellularAutomataConfig{
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
 				NSpecies: 3,
 			},
 		})
@@ -36,8 +36,8 @@ func TestCellularAutomata(t *testing.T) {
 		nSpecies := 3
 
 		g := models.NewGrid(10, 10)
-		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
-			CellularAutomata: &models.CellularAutomataConfig{
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
 				NSpecies: nSpecies,
 			},
 		})
@@ -67,8 +67,8 @@ func TestCellularAutomata(t *testing.T) {
 			color.RGBA{R: 4, G: 4, B: 4, A: 0},
 		}
 		img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
-		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
-			CellularAutomata: &models.CellularAutomataConfig{
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
 				NSpecies: 4,
 			},
 		})
@@ -93,8 +93,8 @@ func TestCellularAutomata(t *testing.T) {
 			color.RGBA{R: 4, G: 4, B: 4, A: 0},
 		}
 		img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
-		s, err := simulations.NewCellularAutomata(&models.SimulationConfig{
-			CellularAutomata: &models.CellularAutomataConfig{
+		s, err := simulations.NewCellularAutomata(models.SimulationConfig{
+			CellularAutomata: models.CellularAutomataConfig{
 				NSpecies: 4,
 			},
 		})

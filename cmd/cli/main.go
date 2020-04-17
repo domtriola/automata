@@ -40,15 +40,15 @@ func main() {
 	a := collectArgs()
 	simConfig := assembleSimConfig(a)
 
-	s, err := runner.New(a.sim, &runner.Config{
+	s, err := runner.New(a.sim, runner.Config{
 		Width:      a.width,
 		Height:     a.height,
 		NFrames:    a.nFrames,
 		Simulation: simConfig,
-		Output: &runner.OutputConfig{
+		Output: runner.OutputConfig{
 			Path: a.outputPath,
 		},
-		GIF: &runner.GIFConfig{
+		GIF: runner.GIFConfig{
 			Delay: 2,
 		},
 	})
@@ -69,7 +69,7 @@ func main() {
 	log.Println("Simulation GIF created at:", filename)
 }
 
-func collectArgs() *args {
+func collectArgs() args {
 	sim := flag.String("sim", models.CellularAutomataType, "The type of simulation to generate")
 	out := flag.String("out", "", "The path where the simulation will put the generated file")
 	width := flag.Int("width", defaultWidth, "The width of the simulation grid")
@@ -80,7 +80,7 @@ func collectArgs() *args {
 	pDirs := flag.String("pDirs", validDirs, "Comma separated cardinal direction abbreviations that a predator cell can attack a prey cell from.")
 	flag.Parse()
 
-	return &args{
+	return args{
 		sim:        *sim,
 		outputPath: *out,
 		width:      *width,
@@ -92,8 +92,8 @@ func collectArgs() *args {
 	}
 }
 
-func assembleSimConfig(a *args) *models.SimulationConfig {
-	cfg := &models.SimulationConfig{}
+func assembleSimConfig(a args) models.SimulationConfig {
+	cfg := models.SimulationConfig{}
 	dirs, err := getDirs(a.pDirs)
 	if err != nil {
 		log.Fatalln("Could not get dirs: ", err)
@@ -101,13 +101,13 @@ func assembleSimConfig(a *args) *models.SimulationConfig {
 
 	switch a.sim {
 	case models.CellularAutomataType:
-		cfg.CellularAutomata = &models.CellularAutomataConfig{
+		cfg.CellularAutomata = models.CellularAutomataConfig{
 			NSpecies:          a.nSpecies,
 			PredatorThreshold: a.pThreshold,
 			PredatorDirs:      dirs,
 		}
 	case models.SlimeMoldType:
-		cfg.SlimeMold = &models.SlimeMoldConfig{}
+		cfg.SlimeMold = models.SlimeMoldConfig{}
 	}
 
 	return cfg
