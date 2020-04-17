@@ -13,10 +13,9 @@ import (
 
 const (
 	// General
-	defaultOutputPath = "tmp/"
-	defaultWidth      = 500
-	defaultHeight     = 500
-	defaultNFrames    = 100
+	defaultWidth   = 500
+	defaultHeight  = 500
+	defaultNFrames = 100
 
 	// Cellular automata
 	defaultNSpecies   = 3
@@ -72,7 +71,7 @@ func main() {
 
 func collectArgs() *args {
 	sim := flag.String("sim", models.CellularAutomataType, "The type of simulation to generate")
-	out := flag.String("out", defaultOutputPath, "The path where the simulation will put generated files")
+	out := flag.String("out", "", "The path where the simulation will put the generated file")
 	width := flag.Int("width", defaultWidth, "The width of the simulation grid")
 	height := flag.Int("height", defaultHeight, "The height of the simulation grid")
 	nFrames := flag.Int("nFrames", defaultNFrames, "The number of frames the simulation generates")

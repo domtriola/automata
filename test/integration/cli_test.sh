@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-OUTPUT_PATH="test/tmp/TODDOM.gif"
+OUTPUT_PATH="test/tmp/test_sim.gif"
 
-rm test/tmp/*.gif
+rm -f test/tmp/*.gif
 
-go run cmd/cli/main.go
+go run cmd/cli/main.go --out $OUTPUT_PATH
 
 if [ ! -f $OUTPUT_PATH ]; then
   echo "$OUTPUT_PATH not found"

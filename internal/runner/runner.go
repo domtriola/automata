@@ -6,11 +6,12 @@ import (
 	"image/gif"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/domtriola/automata/internal/models"
 	"github.com/domtriola/automata/internal/simulations"
 )
+
+const defaultOutDir = "tmp"
 
 // Runner is responsible for instantiating and running a simulation.
 type Runner struct {
@@ -77,8 +78,11 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 		return "", err
 	}
 
-	out := strings.TrimSuffix(r.cfg.Output.Path, "/")
-	filepath = fmt.Sprintf("%s/%s", out, filename)
+	if len(r.cfg.Output.Path) > 0 {
+		filepath = r.cfg.Output.Path
+	} else {
+		filepath = fmt.Sprintf("%s/%s", defaultOutDir, filename)
+	}
 
 	r.sim.InitializeGrid(r.grid)
 
