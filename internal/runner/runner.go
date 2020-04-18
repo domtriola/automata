@@ -78,6 +78,11 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 		return "", err
 	}
 
+	f, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+
 	r.sim.InitializeGrid(r.grid)
 
 	images, err := r.Animate(r.grid)
@@ -86,11 +91,6 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 	}
 
 	g := buildGIF(images, r.cfg.GIF.Delay)
-
-	f, err := os.Create(filepath)
-	if err != nil {
-		return "", err
-	}
 
 	if err = gif.EncodeAll(f, g); err != nil {
 		return "", err
