@@ -8,7 +8,7 @@ echo "it creates a basic simulation"
 
 OUTPUT_PATH="test/tmp/test_sim.gif"
 
-go run cmd/cli/main.go --out $OUTPUT_PATH
+go run cmd/cli/main.go --out $OUTPUT_PATH --width 10 --height 10 --nFrames 100
 
 if [ ! -f $OUTPUT_PATH ]; then
   echo "$OUTPUT_PATH not found"
