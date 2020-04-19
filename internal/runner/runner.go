@@ -63,7 +63,10 @@ func New(simType string, cfg Config) (Runner, error) {
 			return r, err
 		}
 	case models.SlimeMoldType:
-		r.sim = simulations.NewSlimeMold(cfg.Simulation)
+		r.sim, err = simulations.NewSlimeMold(cfg.Simulation)
+		if err != nil {
+			return r, err
+		}
 	default:
 		return r, fmt.Errorf("could not find simulation type: %s", simType)
 	}

@@ -15,7 +15,7 @@ var _ models.Simulation = &SlimeMold{}
 // SlimeMold simulates a slime mold that leaves behind scent trails and creates
 // networks based on where other mold particles have been.
 type SlimeMold struct {
-	// cfg     SlimeMoldConfig
+	cfg     SlimeMoldConfig
 	palette color.Palette
 }
 
@@ -24,8 +24,15 @@ type SlimeMoldConfig struct {
 }
 
 // NewSlimeMold initializes and returns a new slime mold simulation
-func NewSlimeMold(cfg models.SimulationConfig) *SlimeMold {
-	return &SlimeMold{}
+func NewSlimeMold(cfg models.SimulationConfig) (*SlimeMold, error) {
+	s := &SlimeMold{cfg: SlimeMoldConfig{}}
+
+	err := s.setPalette()
+	if err != nil {
+		return &SlimeMold{}, nil
+	}
+
+	return s, nil
 }
 
 // OutputName creates an output file path based on parameters of the
@@ -75,4 +82,20 @@ func (s *SlimeMold) DrawSpace(
 // GetPalette returns the simulation's color palette
 func (s *SlimeMold) GetPalette() color.Palette {
 	return s.palette
+}
+
+func (s *SlimeMold) setPalette() error {
+	palette := []color.Color{}
+	for grey := 0; grey <= 255; grey++ {
+		palette = append(palette, color.RGBA{
+			uint8(grey),
+			uint8(grey),
+			uint8(grey),
+			255,
+		})
+	}
+
+	s.palette = palette
+
+	return nil
 }

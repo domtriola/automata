@@ -35,6 +35,7 @@ func NewCellularAutomata(cfg models.SimulationConfig) (*CellularAutomata, error)
 		predatorThreshold: cfg.CellularAutomata.PredatorThreshold,
 		predatorDirs:      cfg.CellularAutomata.PredatorDirs,
 	}}
+
 	err := s.setPalette()
 
 	return s, err
