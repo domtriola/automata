@@ -1,12 +1,13 @@
 package simulations
 
 import (
+	"crypto/rand"
 	"errors"
 	"image"
 	"image/color"
+	"math/big"
 
 	"github.com/domtriola/automata/internal/models"
-	log "github.com/sirupsen/logrus"
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -18,8 +19,7 @@ type SlimeMold struct {
 	palette color.Palette
 }
 
-// SlimeMoldConfig holds the configurations for the cellular automata
-// simulation
+// SlimeMoldConfig holds the configurations for the slime mold simulation
 type SlimeMoldConfig struct {
 }
 
@@ -31,12 +31,28 @@ func NewSlimeMold(cfg models.SimulationConfig) *SlimeMold {
 // OutputName creates an output file path based on parameters of the
 // simulation
 func (s *SlimeMold) OutputName() (string, error) {
-	return "", errors.New("OutputName not implemented")
+	return "slime_mold.gif", nil
 }
 
 // InitializeGrid instantiates a grid
-func (s *SlimeMold) InitializeGrid(g *models.Grid) {
-	log.Println(g)
+func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
+	oID := 0
+	for _, row := range g.Rows {
+		for _, space := range row {
+			num, err := rand.Int(rand.Reader, big.NewInt(20))
+			if err != nil {
+				return err
+			}
+
+			if num.Cmp(big.NewInt(0)) == 0 {
+				o := models.NewOrganism(oID)
+				space.Organism = o
+				oID++
+			}
+		}
+	}
+
+	return nil
 }
 
 // AdvanceFrame determines and assigns the next state of each organism's

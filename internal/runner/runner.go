@@ -83,7 +83,10 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 		return "", err
 	}
 
-	r.sim.InitializeGrid(r.grid)
+	err = r.sim.InitializeGrid(r.grid)
+	if err != nil {
+		return "", err
+	}
 
 	images, err := r.Animate(r.grid)
 	if err != nil {

@@ -44,7 +44,7 @@ func NewCellularAutomata(cfg models.SimulationConfig) (*CellularAutomata, error)
 // simulation
 func (s *CellularAutomata) OutputName() (string, error) {
 	filename := fmt.Sprintf(
-		"%d_%d_%s",
+		"cellular-automata_%d_%d_%s",
 		s.cfg.nSpecies,
 		s.cfg.predatorThreshold,
 		strings.Join(s.cfg.predatorDirs, ""),
@@ -54,8 +54,10 @@ func (s *CellularAutomata) OutputName() (string, error) {
 }
 
 // InitializeGrid instantiates a grid
-func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
+func (s *CellularAutomata) InitializeGrid(g *models.Grid) error {
 	oID := 0
+
+	// Populate each space
 	for _, row := range g.Rows {
 		for _, space := range row {
 			o := models.NewOrganism(oID)
@@ -66,6 +68,7 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 		}
 	}
 
+	// Let each organism know about it's neighbors
 	for y, row := range g.Rows {
 		for x, space := range row {
 			for _, ns := range g.GetNeighbors(x, y, s.cfg.predatorDirs) {
@@ -76,6 +79,8 @@ func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
 			}
 		}
 	}
+
+	return nil
 }
 
 // AdvanceFrame determines and assigns the next state of each organism's

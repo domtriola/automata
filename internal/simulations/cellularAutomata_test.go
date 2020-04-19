@@ -23,7 +23,8 @@ func TestCellularAutomataInitialize(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		s.InitializeGrid(g)
+		err = s.InitializeGrid(g)
+		require.NoError(t, err)
 
 		for _, row := range g.Rows {
 			for _, space := range row {
@@ -43,7 +44,8 @@ func TestCellularAutomataInitialize(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		s.InitializeGrid(g)
+		err = s.InitializeGrid(g)
+		require.NoError(t, err)
 
 		for _, row := range g.Rows {
 			for _, space := range row {
@@ -123,7 +125,9 @@ func TestCellularAutomataAdvanceFrame(t *testing.T) {
 		require.NoError(t, err)
 
 		g := models.NewGrid(4, 4)
-		s.InitializeGrid(g)
+		err = s.InitializeGrid(g)
+		require.NoError(t, err)
+
 		for _, row := range g.Rows {
 			for _, space := range row {
 				space.Organism.CAFeatures.SpeciesID = 1
@@ -151,7 +155,9 @@ func TestCellularAutomataAdvanceFrame(t *testing.T) {
 		require.NoError(t, err)
 
 		g := models.NewGrid(2, 2)
-		s.InitializeGrid(g)
+		err = s.InitializeGrid(g)
+		require.NoError(t, err)
+
 		g.Rows[0][0].Organism.CAFeatures.SpeciesID = 2
 		g.Rows[0][1].Organism.CAFeatures.SpeciesID = 2
 		g.Rows[1][0].Organism.CAFeatures.SpeciesID = 1
