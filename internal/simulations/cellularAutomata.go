@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/domtriola/automata/internal/models"
-	ccolor "github.com/domtriola/automata/pkg/color"
+	"github.com/domtriola/automata/pkg/palette"
 )
 
 var _ models.Simulation = &CellularAutomata{}
@@ -168,7 +168,7 @@ func (s *CellularAutomata) setPalette() error {
 func createPalette(nSpecies int) (color.Palette, error) {
 	colors := color.Palette{}
 
-	rainbow, err := ccolor.RGBARainbow(7)
+	rainbow, err := palette.Rainbow(7)
 	if err != nil {
 		return rainbow, err
 	}

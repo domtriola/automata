@@ -1,17 +1,17 @@
-package color
+package palette
 
 import (
 	"fmt"
 	"image/color"
 )
 
-// RGBARainbow creates a palette of colors in rainbow order. It accepts a step
+// Rainbow creates a palette of colors in rainbow order. It accepts a step
 // parameter which determines the distance between each color shift. The smaller
 // the step, the more individual colors will result in the palette. The smallest
 // possible step is 7, which results in 223 evenly spaced colors. With larger
 // steps, there will be less colors, and the colors will be less evenly spaced.
 // TODODOM: make that not so by passing overflow to next color selection.
-func RGBARainbow(step int) (color.Palette, error) {
+func Rainbow(step int) (color.Palette, error) {
 	p := color.Palette{}
 
 	if step < 7 {

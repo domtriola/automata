@@ -8,6 +8,16 @@ import (
 	"math/big"
 
 	"github.com/domtriola/automata/internal/models"
+	"github.com/domtriola/automata/pkg/palette"
+)
+
+const (
+	// A multiplier of 100 means scents of at least 0.01 will be barely visible,
+	// since they will be shown at the first index of the grey scale. It also
+	// means that scents over 2.55 will have maximum visibility.
+	// e.g. 100 x 0.01 == 1 (color index) == RGB(1, 1, 1)
+	// e.g. 100 x 2.55 == 255 (color index) == RGB(255, 255, 255)
+	scentVisibilityMultiplier = 100
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -46,12 +56,15 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 	oID := 0
 	for _, row := range g.Rows {
 		for _, space := range row {
-			num, err := rand.Int(rand.Reader, big.NewInt(20))
+			space.Features = &models.SpaceFeatures{}
+
+			r, err := rand.Int(rand.Reader, big.NewInt(20))
 			if err != nil {
 				return err
 			}
 
-			if num.Cmp(big.NewInt(0)) == 0 {
+			shouldPopulate := r.Cmp(big.NewInt(0)) == 0
+			if shouldPopulate {
 				o := models.NewOrganism(oID)
 				space.Organism = o
 				oID++
@@ -76,7 +89,23 @@ func (s *SlimeMold) DrawSpace(
 	x int,
 	y int,
 ) error {
-	return errors.New("DrawSpace not implemented")
+	paletteMax := uint8(len(img.Palette)) - 1
+
+	var colorIndex uint8
+
+	if sp.Organism != nil {
+		colorIndex = paletteMax
+	} else {
+		colorIndex = uint8(sp.Features.Scent * scentVisibilityMultiplier)
+	}
+
+	if colorIndex >= paletteMax {
+		colorIndex = paletteMax
+	}
+
+	img.SetColorIndex(x, y, colorIndex)
+
+	return nil
 }
 
 // GetPalette returns the simulation's color palette
@@ -85,17 +114,7 @@ func (s *SlimeMold) GetPalette() color.Palette {
 }
 
 func (s *SlimeMold) setPalette() error {
-	palette := []color.Color{}
-	for grey := 0; grey <= 255; grey++ {
-		palette = append(palette, color.RGBA{
-			uint8(grey),
-			uint8(grey),
-			uint8(grey),
-			255,
-		})
-	}
-
-	s.palette = palette
+	s.palette = palette.Grey()
 
 	return nil
 }
