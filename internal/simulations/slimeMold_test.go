@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/domtriola/automata/internal/models"
+	"github.com/domtriola/automata/internal/palette"
 	"github.com/domtriola/automata/internal/simulations"
-	"github.com/domtriola/automata/pkg/palette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

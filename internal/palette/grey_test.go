@@ -3,7 +3,7 @@ package palette_test
 import (
 	"testing"
 
-	"github.com/domtriola/automata/pkg/palette"
+	"github.com/domtriola/automata/internal/palette"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,4 +1,4 @@
-test: lint unit integration
+test: unit integration lint
 
 unit:
 	scripts/unit.sh
@@ -14,3 +14,5 @@ format:
 
 example:
 	go run cmd/cli/main.go --width 100 --height 100 --nFrames 100
+
+.PHONY: test unit integration lint format example

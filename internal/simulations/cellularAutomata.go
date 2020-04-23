@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/domtriola/automata/internal/models"
-	"github.com/domtriola/automata/pkg/palette"
+	"github.com/domtriola/automata/internal/palette"
 )
 
 var _ models.Simulation = &CellularAutomata{}
