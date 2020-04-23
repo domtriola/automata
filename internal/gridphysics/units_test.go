@@ -17,31 +17,31 @@ func TestDegreeAngle(t *testing.T) {
 		}
 
 		testCases := []testCase{
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(0),
 				expected: gridphysics.RadianAngle(0),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(15),
 				expected: gridphysics.RadianAngle(0.2617993877991494),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(90),
 				expected: gridphysics.RadianAngle(1.5707963267948966),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(-15),
 				expected: gridphysics.RadianAngle(-0.2617993877991494),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(360),
 				expected: gridphysics.RadianAngle(6.283185307179586),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(1000),
 				expected: gridphysics.RadianAngle(17.453292519943293),
 			},
-			testCase{
+			{
 				input:    gridphysics.DegreeAngle(1.2345),
 				expected: gridphysics.RadianAngle(0.02154608961587),
 			},
