@@ -98,30 +98,30 @@ func TestSlimeMoldDraw(t *testing.T) {
 		assert.Greater(t, b, uint32(0))
 	})
 
-	// t.Run("SlimeMold.DrawSpace() colors the image black if no organism or scent is present", func(t *testing.T) {
-	// 	space := &models.Space{
-	// 		Organism: nil,
-	// 		Features: &models.SpaceFeatures{
-	// 			Scent: 0,
-	// 		},
-	// 	}
+	t.Run("SlimeMold.DrawSpace() colors the image black if no organism or scent is present", func(t *testing.T) {
+		space := &models.Space{
+			Organism: nil,
+			Features: &models.SpaceFeatures{
+				Scent: 0,
+			},
+		}
 
-	// 	p := palette.Grey()
+		p := palette.Grey()
 
-	// 	img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
+		img := image.NewPaletted(image.Rect(0, 0, 3, 3), p)
 
-	// 	s, err := simulations.NewSlimeMold(models.SimulationConfig{
-	// 		SlimeMold: models.SlimeMoldConfig{},
-	// 	})
-	// 	require.NoError(t, err)
+		s, err := simulations.NewSlimeMold(models.SimulationConfig{
+			SlimeMold: models.SlimeMoldConfig{},
+		})
+		require.NoError(t, err)
 
-	// 	err = s.DrawSpace(space, img, 1, 2)
-	// 	require.NoError(t, err)
+		err = s.DrawSpace(space, img, 1, 2)
+		require.NoError(t, err)
 
-	// 	r, g, b, _ := img.At(1, 2).RGBA()
+		r, g, b, _ := img.At(1, 2).RGBA()
 
-	// 	assert.Equal(t, uint32(0), r)
-	// 	assert.Equal(t, uint32(0), g)
-	// 	assert.Equal(t, uint32(0), b)
-	// })
+		assert.Equal(t, uint32(0), r)
+		assert.Equal(t, uint32(0), g)
+		assert.Equal(t, uint32(0), b)
+	})
 }
