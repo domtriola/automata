@@ -18,6 +18,10 @@ const (
 	// e.g. 100 x 0.01 == 1 (color index) == RGB(1, 1, 1)
 	// e.g. 100 x 2.55 == 255 (color index) == RGB(255, 255, 255)
 	scentVisibilityMultiplier = 100
+
+	// initOrganismChance is the chance that an organism will exist at any given
+	// space when the simulation is initialized.
+	initOrganismChance = 1.0 / 20
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -58,7 +62,7 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 		for _, space := range row {
 			space.Features = &models.SpaceFeatures{}
 
-			r, err := rand.Int(rand.Reader, big.NewInt(20))
+			r, err := rand.Int(rand.Reader, big.NewInt(int64(1/initOrganismChance)))
 			if err != nil {
 				return err
 			}
