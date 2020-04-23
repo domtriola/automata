@@ -2,7 +2,6 @@ package palette
 
 import (
 	"image/color"
-	"log"
 )
 
 // Grey creates a greyscale palette with increments of 1 from 0 to 255.
@@ -16,8 +15,6 @@ func Grey() color.Palette {
 			255,
 		})
 	}
-
-	log.Printf("Grey() length: %d", len(p))
 
 	return p
 }
