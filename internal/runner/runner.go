@@ -115,6 +115,7 @@ func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 		if err != nil {
 			return images, err
 		}
+
 		images = append(images, img)
 
 		if err := r.sim.AdvanceFrame(g); err != nil {

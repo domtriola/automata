@@ -58,6 +58,7 @@ func (s *SlimeMold) OutputName() (string, error) {
 // InitializeGrid instantiates a grid
 func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 	oID := 0
+
 	for _, row := range g.Rows {
 		for _, space := range row {
 			space.Features = &models.SpaceFeatures{}

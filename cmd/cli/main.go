@@ -37,27 +37,9 @@ type args struct {
 	nSpecies int
 }
 
-func init() {
-	logLevels := map[string]log.Level{
-		"fatal": log.FatalLevel,
-		"error": log.ErrorLevel,
-		"warn":  log.WarnLevel,
-		"info":  log.InfoLevel,
-		"debug": log.DebugLevel,
-	}
-
-	log.SetFormatter(&log.TextFormatter{})
-	log.SetOutput(os.Stdout)
-
-	envLevel := os.Getenv("LOG_LEVEL")
-	if l, ok := logLevels[envLevel]; ok {
-		log.SetLevel(l)
-	} else {
-		log.SetLevel(log.InfoLevel)
-	}
-}
-
 func main() {
+	configureLogger()
+
 	a := collectArgs()
 	simConfig := assembleSimConfig(a)
 
@@ -90,6 +72,26 @@ func main() {
 	log.Println("Simulation GIF created at:", filename)
 }
 
+func configureLogger() {
+	logLevels := map[string]log.Level{
+		"fatal": log.FatalLevel,
+		"error": log.ErrorLevel,
+		"warn":  log.WarnLevel,
+		"info":  log.InfoLevel,
+		"debug": log.DebugLevel,
+	}
+
+	log.SetFormatter(&log.TextFormatter{})
+	log.SetOutput(os.Stdout)
+
+	envLevel := os.Getenv("LOG_LEVEL")
+	if l, ok := logLevels[envLevel]; ok {
+		log.SetLevel(l)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+}
+
 func collectArgs() args {
 	sim := flag.String("sim", models.CellularAutomataType, "The type of simulation to generate")
 	out := flag.String("out", "", "The path where the simulation will put the generated file")
@@ -97,8 +99,17 @@ func collectArgs() args {
 	height := flag.Int("height", defaultHeight, "The height of the simulation grid")
 	nFrames := flag.Int("nFrames", defaultNFrames, "The number of frames the simulation generates")
 	nSpecies := flag.Int("nSpecies", defaultNSpecies, "The number of species types in a cellular automata simulation")
-	pThreshold := flag.Int("pThreshold", defaultPThreshold, "The number of neighboring predator cells it takes to eat a prey cell in a cellular automata simulation")
-	pDirs := flag.String("pDirs", validDirs, "Comma separated cardinal direction abbreviations that a predator cell can attack a prey cell from.")
+	pThreshold := flag.Int(
+		"pThreshold",
+		defaultPThreshold,
+		"The number of neighboring predator cells it takes to eat a prey cell in a cellular automata simulation",
+	)
+	pDirs := flag.String(
+		"pDirs",
+		validDirs,
+		"Comma separated cardinal direction abbreviations that a predator cell can attack a prey cell from.",
+	)
+
 	flag.Parse()
 
 	return args{
@@ -115,6 +126,7 @@ func collectArgs() args {
 
 func assembleSimConfig(a args) models.SimulationConfig {
 	cfg := models.SimulationConfig{}
+
 	dirs, err := getDirs(a.pDirs)
 	if err != nil {
 		log.Fatalln("Could not get dirs: ", err)

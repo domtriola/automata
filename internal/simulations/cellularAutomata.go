@@ -174,6 +174,7 @@ func createPalette(nSpecies int) (color.Palette, error) {
 	}
 
 	step := len(rainbow) / nSpecies
+
 	for i := 0; i < nSpecies; i++ {
 		colors = append(colors, rainbow[i*step])
 	}

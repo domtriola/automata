@@ -5,11 +5,13 @@ import (
 	"image/color"
 )
 
-// CellularAutomataType identifies the cellular automata simulation
-var CellularAutomataType = "cellular_automata"
+const (
+	// CellularAutomataType identifies the cellular automata simulation
+	CellularAutomataType = "cellular_automata"
 
-// SlimeMoldType identifies the slime mold simulation
-var SlimeMoldType = "slime_mold"
+	// SlimeMoldType identifies the slime mold simulation
+	SlimeMoldType = "slime_mold"
+)
 
 // Simulation is the interface that all simulations must follow
 type Simulation interface {
