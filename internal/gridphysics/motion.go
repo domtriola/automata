@@ -24,10 +24,10 @@ type AngleVector struct {
 // CoordVector = (x, y), (m, n)
 type CoordVector [2]Coordinate
 
-// Move gives the next position given a starting position and a vector.
-func Move(coord Coordinate, v AngleVector) Coordinate {
+// Move returns the next coordinate given an angle vector.
+func (c Coordinate) Move(v AngleVector) Coordinate {
 	xVel, yVel := v.LinearVelocity()
-	return Coordinate{coord[0] + xVel, coord[1] + yVel}
+	return Coordinate{c[0] + xVel, c[1] + yVel}
 }
 
 // ToDiscreteCoordinate rounds an imaginary coordinate to a discrete coordinate.
