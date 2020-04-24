@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"github.com/domtriola/automata/internal/gridphysics"
 )
 
 // Organism represents one creature that can be displayed at one Space
@@ -41,9 +41,9 @@ type SMFeatures struct {
 	YPos     float64
 	NextYPos float64
 
-	// direction represents the angular direction an organism is facing. A
-	// direction will be between 0 and 360.
-	direction float64
+	// direction represents the angular direction (in degrees) that an organism
+	// is facing.
+	Direction gridphysics.DegreeAngle
 }
 
 // NewOrganism instantiates and returns a new Organism
@@ -53,24 +53,4 @@ func NewOrganism(id int) *Organism {
 		CAFeatures: &CAFeatures{},
 		SMFeatures: &SMFeatures{},
 	}
-}
-
-// GetDirection returns the direction an organism is facing.
-func (f *SMFeatures) GetDirection() float64 {
-	return f.direction
-}
-
-// SetDirection sets the direction an organism is facing. The direction is an
-// angular direction between 0 and 360.
-func (f *SMFeatures) SetDirection(dir float64) error {
-	if dir < 0 || dir > 360 {
-		return fmt.Errorf(
-			"direction must be an angular direction between 0 and 360. Received: %f",
-			dir,
-		)
-	}
-
-	f.direction = dir
-
-	return nil
 }
