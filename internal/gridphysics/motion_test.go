@@ -71,8 +71,12 @@ func TestCoordinate(t *testing.T) {
 			},
 		}
 
-		for _, tc := range tCases {
+		for _, testCase := range tCases {
+			tc := testCase
+
 			t.Run(tc.name, func(t *testing.T) {
+				t.Parallel()
+
 				nextCoord := tc.coord.Move(tc.vect)
 				assert.InDelta(t, tc.expected[0], nextCoord[0], 0.00001, "unexpected x coord")
 				assert.InDelta(t, tc.expected[1], nextCoord[1], 0.00001, "unexpected y coord")
