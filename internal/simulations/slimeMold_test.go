@@ -42,6 +42,7 @@ func TestSlimeMoldInitialize(t *testing.T) {
 	})
 }
 
+// nolint: funlen
 func TestSlimeMoldDraw(t *testing.T) {
 	t.Parallel()
 

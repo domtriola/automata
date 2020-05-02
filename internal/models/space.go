@@ -2,8 +2,9 @@ package models
 
 // Space represents one discrete location that may be occupied by an organism.
 type Space struct {
-	Organism *Organism
-	Features *SpaceFeatures
+	Organism  *Organism
+	Features  *SpaceFeatures
+	Neighbors []*Space
 }
 
 // SpaceFeatures contains optional features of a Space that apply to certain

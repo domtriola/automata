@@ -11,6 +11,7 @@ import (
 // possible step is 7, which results in 223 evenly spaced colors. With larger
 // steps, there will be less colors, and the colors will be less evenly spaced.
 // TODODOM: make that not so by passing overflow to next color selection.
+// nolint: funlen
 func Rainbow(step int) (color.Palette, error) {
 	p := color.Palette{}
 

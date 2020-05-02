@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"image"
 	"image/color"
-	"log"
+	"math"
 	"math/big"
 
 	"github.com/domtriola/automata/internal/gridphysics"
@@ -24,8 +24,22 @@ const (
 	// space when the simulation is initialized.
 	initOrganismChance = 1.0 / 20
 
+	// TODODOM: make an option
 	// organismMovementSpeed is the rate of movement for all organisms.
 	organismMovementSpeed = 1
+
+	// TODODOM: make an option
+	// scentDecay is the rate at which a scent decays from a space.
+	scentDecay = 0.9
+
+	// TODODOM: make an option
+	// scentSpreadFactor is the percentage of scent that dissapates to neighboring
+	// spaces.
+	scentSpreadFactor = 0.1
+
+	// TODODOM: make options
+	sensorDistance = 9
+	sensorDegree   = 45
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -45,10 +59,7 @@ type SlimeMoldConfig struct {
 func NewSlimeMold(cfg models.SimulationConfig) (*SlimeMold, error) {
 	s := &SlimeMold{cfg: SlimeMoldConfig{}}
 
-	err := s.setPalette()
-	if err != nil {
-		return &SlimeMold{}, nil
-	}
+	s.setPalette()
 
 	return s, nil
 }
@@ -81,13 +92,23 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 		}
 	}
 
+	for y, row := range g.Rows {
+		for x, space := range row {
+			neighbors := g.GetNeighbors(x, y, []string{"nw", "n", "ne", "e", "se", "s", "sw", "w"})
+			space.Neighbors = neighbors
+		}
+	}
+
 	return nil
 }
 
 // AdvanceFrame determines and assigns the next state of each organism's
 // parameters.
 func (s *SlimeMold) AdvanceFrame(g *models.Grid) error {
-	s.calculateNextFrame(g)
+	if err := s.calculateNextFrame(g); err != nil {
+		return err
+	}
+
 	s.applyNextFrame(g)
 
 	return nil
@@ -125,16 +146,19 @@ func (s *SlimeMold) GetPalette() color.Palette {
 	return s.palette
 }
 
-func (s *SlimeMold) setPalette() error {
+func (s *SlimeMold) setPalette() {
 	s.palette = palette.Grey()
-
-	return nil
 }
 
-func (s *SlimeMold) calculateNextFrame(g *models.Grid) {
-	rotateOrganisms(g)
+func (s *SlimeMold) calculateNextFrame(g *models.Grid) error {
+	if err := rotateOrganisms(g); err != nil {
+		return err
+	}
+
 	setNextPositions(g)
 	disperseScentTrails(g)
+
+	return nil
 }
 
 func (s *SlimeMold) applyNextFrame(g *models.Grid) {
@@ -150,8 +174,121 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 	}
 }
 
-func rotateOrganisms(g *models.Grid) {
-	log.Fatal("not implemented")
+func rotateOrganisms(g *models.Grid) error {
+	for _, row := range g.Rows {
+		for _, space := range row {
+			if err := rotateOrganism(g, space.Organism); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func rotateOrganism(g *models.Grid, o *models.Organism) error {
+	o.SMFeatures.Direction = reduceDirection(o.SMFeatures.Direction)
+
+	lSpace, mSpace, rSpace := getScensorSpaces(g, o)
+
+	if lSpace == nil || rSpace == nil || mSpace == nil {
+		// Continue in the same direction. Movement phase will turn organism
+		// around if it can't proceed further.
+		// TODODOM: be more clever - maybe rotate opposite the nil direction?
+		// Otherwise organisms could get in a swim-lane loop near the edge.
+		return nil
+	}
+
+	lScent := lSpace.Features.Scent
+	rScent := rSpace.Features.Scent
+	mScent := mSpace.Features.Scent
+
+	// If the middle scensor has the greatest scent, proceed straight ahead
+	if mScent > lScent && mScent > rScent {
+		return nil
+	}
+
+	// If scents to the left and right are greater than straight ahead, pick
+	// left or right randomly
+	if lScent > mScent && rScent > mScent {
+		r, err := rand.Int(rand.Reader, big.NewInt(2))
+		if err != nil {
+			return err
+		}
+
+		if r.Cmp(big.NewInt(0)) == 0 {
+			o.SMFeatures.Direction += sensorDegree
+		} else {
+			o.SMFeatures.Direction -= sensorDegree
+		}
+
+		return nil
+	}
+
+	// If left scent is greater than right, turn left
+	if lScent > rScent {
+		o.SMFeatures.Direction += sensorDegree
+		return nil
+	}
+
+	// If right scent is greater than left, turn right
+	if rScent > lScent {
+		o.SMFeatures.Direction -= sensorDegree
+		return nil
+	}
+
+	// If no scent is greater, then proceed straight ahead
+	return nil
+}
+
+// reduceDirection ensures that an organism's direction doesn't overflow float64
+func reduceDirection(d gridphysics.DegreeAngle) gridphysics.DegreeAngle {
+	buffer := 1000000.0
+	df := float64(d)
+
+	if df > math.MaxFloat64-buffer || df < math.SmallestNonzeroFloat64+buffer {
+		return gridphysics.DegreeAngle(math.Mod(df, 360))
+	}
+
+	return d
+}
+
+func getScensorSpaces(g *models.Grid, o *models.Organism) (lSpace, mSpace, rSpace *models.Space) {
+	ld := o.SMFeatures.Direction + sensorDegree
+	lv := gridphysics.AngleVector{
+		Direction: ld.ToRadians(),
+		Magnitude: sensorDistance,
+	}
+
+	rd := o.SMFeatures.Direction - sensorDegree
+	rv := gridphysics.AngleVector{
+		Direction: rd.ToRadians(),
+		Magnitude: sensorDistance,
+	}
+
+	mv := gridphysics.AngleVector{
+		Direction: o.SMFeatures.Direction.ToRadians(),
+		Magnitude: sensorDistance,
+	}
+
+	coord := gridphysics.Coordinate{o.SMFeatures.XPos, o.SMFeatures.YPos}
+	lCoord := coord.Move(lv).ToDiscreteCoordinate()
+	rCoord := coord.Move(rv).ToDiscreteCoordinate()
+	mCoord := coord.Move(mv).ToDiscreteCoordinate()
+
+	if g.HasCoord(int(lCoord[0]), int(lCoord[1])) {
+		lSpace = g.Rows[lCoord[1]][lCoord[0]]
+	}
+
+	if g.HasCoord(int(rCoord[0]), int(rCoord[1])) {
+		rSpace = g.Rows[rCoord[1]][rCoord[0]]
+	}
+
+	if g.HasCoord(int(mCoord[0]), int(mCoord[1])) {
+		mSpace = g.Rows[mCoord[1]][mCoord[0]]
+	}
+
+	return lSpace, mSpace, rSpace
 }
 
 func setNextPositions(g *models.Grid) {
@@ -171,136 +308,28 @@ func setNextPositions(g *models.Grid) {
 			coord := gridphysics.Coordinate{o.SMFeatures.XPos, o.SMFeatures.YPos}
 			nextCoord := coord.Move(vect)
 
-			// TODODOM: handle edge of grid case
-			o.SMFeatures.NextXPos = nextCoord[0]
-			o.SMFeatures.NextYPos = nextCoord[1]
+			if g.HasCoord(int(coord[0]), int(coord[1])) {
+				o.SMFeatures.NextXPos = nextCoord[0]
+				o.SMFeatures.NextYPos = nextCoord[1]
+			} else {
+				o.SMFeatures.Direction += 180
+			}
 		}
 	}
 }
 
 func disperseScentTrails(g *models.Grid) {
-	log.Fatal("not implemented")
+	for _, row := range g.Rows {
+		for _, space := range row {
+			space.Features.Scent *= scentDecay
+
+			for _, n := range space.Neighbors {
+				n.Features.Scent += space.Features.Scent * scentSpreadFactor
+			}
+
+			if space.Organism != nil {
+				space.Features.Scent++
+			}
+		}
+	}
 }
-
-// TODODOM: incorporate
-// func moveOrganisms(grid Grid) {
-// 	for _, row := range grid.rows {
-// 		for _, space := range row {
-// 			space.scent *= scentDecay
-// 			// TODO: scent spread
-
-// 			if space.organism != nil {
-// 				organism := space.organism
-// 				destinationSpace := grid.rows[organism.nextDiscreteXPos][organism.nextDiscreteYPos]
-
-// 				// Movement Step
-// 				// Move if possible, otherwise change directions
-// 				moveOrganism(organism, space, destinationSpace)
-
-// 				// Sensory Step
-// 				// Find the direction with the largest scent trail and turn in that direction
-// 				rotateOrganism(organism, grid)
-// 			}
-// 		}
-// 	}
-// }
-
-// TODODOM: incorporate
-// func moveOrganism(organism *Organism, currentSpace *Space, destinationSpace *Space) {
-// 	if destinationSpace.organism == nil {
-// 		// NOTE: This is a greedy approach
-// 		// Setting this to nil before calculating the rest of the movements
-// 		// means the top-left of the screen becomes more dense than the
-// 		// bottom-right because it opens up movement options to the upper-left
-// 		// zones before the lower right zones
-// 		currentSpace.organism = nil
-// 		destinationSpace.organism = organism
-// 		destinationSpace.scent++
-// 	} else if destinationSpace.organism.id != organism.id {
-// 		organism.direction = float64(rand.Intn(360))
-// 	}
-// }
-
-// TODODOM: incorporate
-// func rotateOrganism(organism *Organism, grid Grid) {
-// 	sensorDistance := float64(options["sensorDistance"])
-// 	sensorDegree := float64(options["sensorDegree"])
-// 	leftSensorDirection := organism.direction + sensorDegree
-// 	if leftSensorDirection > 360 {
-// 		leftSensorDirection -= 360
-// 	}
-// 	rightSensorDirection := organism.direction - sensorDegree
-// 	if rightSensorDirection < 0 {
-// 		rightSensorDirection += 360
-// 	}
-// 	leftSensorVelocity := Velocity{
-// 		speed:     sensorDistance,
-// 		direction: leftSensorDirection,
-// 	}
-// 	rightSensorVelocity := Velocity{
-// 		speed:     sensorDistance,
-// 		direction: rightSensorDirection,
-// 	}
-// 	frontSensorVelocity := Velocity{
-// 		speed:     sensorDistance,
-// 		direction: organism.direction,
-// 	}
-// 	leftSensorX, leftSensorY := NextPos(organism.xPos, organism.yPos, leftSensorVelocity)
-// 	rightSensorX, rightSensorY := NextPos(organism.xPos, organism.yPos, rightSensorVelocity)
-// 	frontSensorX, frontSensorY := NextPos(organism.xPos, organism.yPos, frontSensorVelocity)
-// 	leftSensorDiscreteX, leftSensorDiscreteY := FloatPosToGridPos(leftSensorX, leftSensorY)
-// 	rightSensorDiscreteX, rightSensorDiscreteY := FloatPosToGridPos(rightSensorX, rightSensorY)
-// 	frontSensorDiscreteX, frontSensorDiscreteY := FloatPosToGridPos(frontSensorX, frontSensorY)
-
-// 	var leftSensorSpace *Space
-// 	var rightSensorSpace *Space
-// 	var frontSensorSpace *Space
-// 	if grid.hasCoord(leftSensorDiscreteX, leftSensorDiscreteY) {
-// 		leftSensorSpace = grid.rows[leftSensorDiscreteY][leftSensorDiscreteX]
-// 	}
-// 	if grid.hasCoord(rightSensorDiscreteX, rightSensorDiscreteY) {
-// 		rightSensorSpace = grid.rows[rightSensorDiscreteY][rightSensorDiscreteX]
-// 	}
-// 	if grid.hasCoord(frontSensorDiscreteX, frontSensorDiscreteY) {
-// 		frontSensorSpace = grid.rows[frontSensorDiscreteY][frontSensorDiscreteX]
-// 	}
-
-// 	if leftSensorSpace == nil || rightSensorSpace == nil || frontSensorSpace == nil {
-// 		organism.direction = float64(rand.Intn(360))
-// 	} else {
-// 		leftScent := leftSensorSpace.scent
-// 		rightScent := rightSensorSpace.scent
-// 		frontScent := frontSensorSpace.scent
-
-// 		if frontScent > leftScent && frontScent > rightScent {
-// 			// Continue in same direction
-// 		} else if leftScent > frontScent && rightScent > frontScent {
-// 			// Rotate randomly left or right
-// 			toss := rand.Intn(2)
-// 			if toss == 0 {
-// 				organism.direction += sensorDegree
-// 				if organism.direction > 360 {
-// 					organism.direction -= 360
-// 				}
-// 			} else {
-// 				organism.direction -= sensorDegree
-// 				if organism.direction < 0 {
-// 					organism.direction += 360
-// 				}
-// 			}
-// 		} else if leftScent > rightScent {
-// 			// Rotate left
-// 			organism.direction += sensorDegree
-// 			if organism.direction > 360 {
-// 				organism.direction -= 360
-// 			}
-// 		} else if rightScent > leftScent {
-// 			// Rotate right
-// 			organism.direction -= sensorDegree
-// 			if organism.direction < 0 {
-// 				organism.direction += 360
-// 			}
-// 		}
-// 		// Else continue in same direction
-// 	}
-// }
