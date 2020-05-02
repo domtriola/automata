@@ -9,6 +9,7 @@ golangci-lint run \
   -E depguard \
   -E dogsled \
   -E dupl \
+  -E funlen \
   -E gochecknoglobals \
   -E gochecknoinits \
   -E gocognit \
@@ -30,10 +31,10 @@ golangci-lint run \
   -E scopelint \
   -E stylecheck \
   -E unconvert \
+  -E unparam \
   -E whitespace \
   -E wsl \
-  # -E funlen \
-  # -E unparam \
+  # TODODOM:
   # -E godox \
 
 echo
