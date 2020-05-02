@@ -177,6 +177,10 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 func rotateOrganisms(g *models.Grid) error {
 	for _, row := range g.Rows {
 		for _, space := range row {
+			if space.Organism == nil {
+				return nil
+			}
+
 			if err := rotateOrganism(g, space.Organism); err != nil {
 				return err
 			}

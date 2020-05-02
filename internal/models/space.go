@@ -14,3 +14,10 @@ type SpaceFeatures struct {
 	// Scent represents the strength of a scent that may be left behind by organisms.
 	Scent float64
 }
+
+// NewSpace returns a new Space
+func NewSpace() *Space {
+	return &Space{
+		Features: &SpaceFeatures{},
+	}
+}

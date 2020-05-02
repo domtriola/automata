@@ -12,7 +12,10 @@ lint:
 format:
 	gofmt -s -w .
 
-example:
+example_automata:
 	go run cmd/cli/main.go --width 100 --height 100 --nFrames 100
 
-.PHONY: test unit integration lint format example
+example_slimemold:
+	go run cmd/cli/main.go --sim slime_mold --width 100 --height 100 --nFrames 100
+
+.PHONY: test unit integration lint format example_automata example_slimemold

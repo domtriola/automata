@@ -19,7 +19,7 @@ func NewGrid(width int, height int) *Grid {
 		row := []*Space{}
 
 		for x := 0; x < width; x++ {
-			space := &Space{}
+			space := NewSpace()
 			row = append(row, space)
 		}
 
@@ -53,7 +53,7 @@ func (g *Grid) HasCoord(x, y int) bool {
 // coordinate exists in the grid
 func (g *Grid) GetSpace(x, y int) (*Space, bool) {
 	if !g.HasCoord(x, y) {
-		return &Space{}, false
+		return nil, false
 	}
 
 	return g.Rows[y][x], true
