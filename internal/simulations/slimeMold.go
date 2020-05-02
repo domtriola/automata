@@ -168,8 +168,8 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 				continue
 			}
 
-			space.Organism.SMFeatures.XPos = space.Organism.SMFeatures.NextXPos
-			space.Organism.SMFeatures.YPos = space.Organism.SMFeatures.NextYPos
+			space.Organism.Features.XPos = space.Organism.NextFeatures.XPos
+			space.Organism.Features.YPos = space.Organism.NextFeatures.YPos
 		}
 	}
 }
@@ -187,7 +187,7 @@ func rotateOrganisms(g *models.Grid) error {
 }
 
 func rotateOrganism(g *models.Grid, o *models.Organism) error {
-	o.SMFeatures.Direction = reduceDirection(o.SMFeatures.Direction)
+	o.Features.Direction = reduceDirection(o.Features.Direction)
 
 	lSpace, mSpace, rSpace := getScensorSpaces(g, o)
 
@@ -217,9 +217,9 @@ func rotateOrganism(g *models.Grid, o *models.Organism) error {
 		}
 
 		if r.Cmp(big.NewInt(0)) == 0 {
-			o.SMFeatures.Direction += sensorDegree
+			o.Features.Direction += sensorDegree
 		} else {
-			o.SMFeatures.Direction -= sensorDegree
+			o.Features.Direction -= sensorDegree
 		}
 
 		return nil
@@ -227,13 +227,13 @@ func rotateOrganism(g *models.Grid, o *models.Organism) error {
 
 	// If left scent is greater than right, turn left
 	if lScent > rScent {
-		o.SMFeatures.Direction += sensorDegree
+		o.Features.Direction += sensorDegree
 		return nil
 	}
 
 	// If right scent is greater than left, turn right
 	if rScent > lScent {
-		o.SMFeatures.Direction -= sensorDegree
+		o.Features.Direction -= sensorDegree
 		return nil
 	}
 
@@ -254,24 +254,24 @@ func reduceDirection(d gridphysics.DegreeAngle) gridphysics.DegreeAngle {
 }
 
 func getScensorSpaces(g *models.Grid, o *models.Organism) (lSpace, mSpace, rSpace *models.Space) {
-	ld := o.SMFeatures.Direction + sensorDegree
+	ld := o.Features.Direction + sensorDegree
 	lv := gridphysics.AngleVector{
 		Direction: ld.ToRadians(),
 		Magnitude: sensorDistance,
 	}
 
-	rd := o.SMFeatures.Direction - sensorDegree
+	rd := o.Features.Direction - sensorDegree
 	rv := gridphysics.AngleVector{
 		Direction: rd.ToRadians(),
 		Magnitude: sensorDistance,
 	}
 
 	mv := gridphysics.AngleVector{
-		Direction: o.SMFeatures.Direction.ToRadians(),
+		Direction: o.Features.Direction.ToRadians(),
 		Magnitude: sensorDistance,
 	}
 
-	coord := gridphysics.Coordinate{o.SMFeatures.XPos, o.SMFeatures.YPos}
+	coord := gridphysics.Coordinate{o.Features.XPos, o.Features.YPos}
 	lCoord := coord.Move(lv).ToDiscreteCoordinate()
 	rCoord := coord.Move(rv).ToDiscreteCoordinate()
 	mCoord := coord.Move(mv).ToDiscreteCoordinate()
@@ -301,18 +301,18 @@ func setNextPositions(g *models.Grid) {
 			o := space.Organism
 
 			vect := gridphysics.AngleVector{
-				Direction: o.SMFeatures.Direction.ToRadians(),
+				Direction: o.Features.Direction.ToRadians(),
 				Magnitude: organismMovementSpeed,
 			}
 
-			coord := gridphysics.Coordinate{o.SMFeatures.XPos, o.SMFeatures.YPos}
+			coord := gridphysics.Coordinate{o.Features.XPos, o.Features.YPos}
 			nextCoord := coord.Move(vect)
 
 			if g.HasCoord(int(coord[0]), int(coord[1])) {
-				o.SMFeatures.NextXPos = nextCoord[0]
-				o.SMFeatures.NextYPos = nextCoord[1]
+				o.NextFeatures.XPos = nextCoord[0]
+				o.NextFeatures.YPos = nextCoord[1]
 			} else {
-				o.SMFeatures.Direction += 180
+				o.Features.Direction += 180
 			}
 		}
 	}

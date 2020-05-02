@@ -50,8 +50,8 @@ func TestCellularAutomataInitialize(t *testing.T) {
 		for _, row := range g.Rows {
 			for _, space := range row {
 				assert.NotNil(t, space.Organism, "unexpected empty space")
-				assert.NotZero(t, space.Organism.CAFeatures.SpeciesID, "unexpected species id")
-				assert.LessOrEqual(t, space.Organism.CAFeatures.SpeciesID, nSpecies, "unexpected species id")
+				assert.NotZero(t, space.Organism.Features.SpeciesID, "unexpected species id")
+				assert.LessOrEqual(t, space.Organism.Features.SpeciesID, nSpecies, "unexpected species id")
 			}
 		}
 	})
@@ -62,7 +62,7 @@ func TestCellularAutomataDraw(t *testing.T) {
 
 	t.Run("CellularAutomata.DrawSpace() colors the given image", func(t *testing.T) {
 		o := models.NewOrganism(1)
-		o.CAFeatures.SpeciesID = 4
+		o.Features.SpeciesID = 4
 		space := &models.Space{
 			Organism: o,
 		}
@@ -88,7 +88,7 @@ func TestCellularAutomataDraw(t *testing.T) {
 
 	t.Run("CellularAutomata.DrawSpace() returns an error if color index is out of bounds", func(t *testing.T) {
 		o := models.NewOrganism(1)
-		o.CAFeatures.SpeciesID = 6
+		o.Features.SpeciesID = 6
 		space := &models.Space{
 			Organism: o,
 		}
@@ -130,7 +130,7 @@ func TestCellularAutomataAdvanceFrame(t *testing.T) {
 
 		for _, row := range g.Rows {
 			for _, space := range row {
-				space.Organism.CAFeatures.SpeciesID = 1
+				space.Organism.Features.SpeciesID = 1
 			}
 		}
 
@@ -139,7 +139,7 @@ func TestCellularAutomataAdvanceFrame(t *testing.T) {
 
 		for _, row := range g.Rows {
 			for _, space := range row {
-				assert.Equal(t, 1, space.Organism.CAFeatures.SpeciesID)
+				assert.Equal(t, 1, space.Organism.Features.SpeciesID)
 			}
 		}
 	})
@@ -158,17 +158,17 @@ func TestCellularAutomataAdvanceFrame(t *testing.T) {
 		err = s.InitializeGrid(g)
 		require.NoError(t, err)
 
-		g.Rows[0][0].Organism.CAFeatures.SpeciesID = 2
-		g.Rows[0][1].Organism.CAFeatures.SpeciesID = 2
-		g.Rows[1][0].Organism.CAFeatures.SpeciesID = 1
-		g.Rows[1][1].Organism.CAFeatures.SpeciesID = 1
+		g.Rows[0][0].Organism.Features.SpeciesID = 2
+		g.Rows[0][1].Organism.Features.SpeciesID = 2
+		g.Rows[1][0].Organism.Features.SpeciesID = 1
+		g.Rows[1][1].Organism.Features.SpeciesID = 1
 
 		err = s.AdvanceFrame(g)
 		require.NoError(t, err)
 
 		for _, row := range g.Rows {
 			for _, space := range row {
-				assert.Equal(t, 2, space.Organism.CAFeatures.SpeciesID)
+				assert.Equal(t, 2, space.Organism.Features.SpeciesID)
 			}
 		}
 	})
