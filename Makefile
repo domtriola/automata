@@ -12,6 +12,9 @@ lint:
 format:
 	gofmt -s -w .
 
+clean:
+	rm -rf tmp/{*.gif,*.out}
+
 example_automata:
 	go run cmd/cli/main.go --width 100 --height 100 --nFrames 100
 

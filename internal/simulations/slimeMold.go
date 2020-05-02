@@ -327,9 +327,9 @@ func disperseScentTrails(g *models.Grid) {
 		for _, space := range row {
 			space.Features.Scent *= scentDecay
 
-			for _, n := range space.Neighbors {
-				n.Features.Scent += space.Features.Scent * scentSpreadFactor
-			}
+			// for _, n := range space.Neighbors {
+			// 	n.Features.Scent += space.Features.Scent * scentSpreadFactor
+			// }
 
 			if space.Organism != nil {
 				space.Features.Scent++

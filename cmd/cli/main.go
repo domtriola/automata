@@ -14,9 +14,10 @@ import (
 
 const (
 	// General
-	defaultWidth   = 500
-	defaultHeight  = 500
-	defaultNFrames = 100
+	defaultWidth    = 500
+	defaultHeight   = 500
+	defaultNFrames  = 100
+	defaultGIFDelay = 2
 
 	// Cellular automata
 	defaultNSpecies   = 3
@@ -30,6 +31,7 @@ type args struct {
 	width      int
 	height     int
 	nFrames    int
+	gDelay     int
 	pThreshold int
 	pDirs      string
 
@@ -52,7 +54,7 @@ func main() {
 			Path: a.outputPath,
 		},
 		GIF: runner.GIFConfig{
-			Delay: 2,
+			Delay: a.gDelay,
 		},
 	})
 	if err != nil {
@@ -98,6 +100,7 @@ func collectArgs() args {
 	width := flag.Int("width", defaultWidth, "The width of the simulation grid")
 	height := flag.Int("height", defaultHeight, "The height of the simulation grid")
 	nFrames := flag.Int("nFrames", defaultNFrames, "The number of frames the simulation generates")
+	gDelay := flag.Int("gDelay", defaultGIFDelay, "The amound of time between frames in the GIF in 100ths of a second")
 	nSpecies := flag.Int("nSpecies", defaultNSpecies, "The number of species types in a cellular automata simulation")
 	pThreshold := flag.Int(
 		"pThreshold",
@@ -118,6 +121,7 @@ func collectArgs() args {
 		width:      *width,
 		height:     *height,
 		nFrames:    *nFrames,
+		gDelay:     *gDelay,
 		nSpecies:   *nSpecies,
 		pThreshold: *pThreshold,
 		pDirs:      *pDirs,
