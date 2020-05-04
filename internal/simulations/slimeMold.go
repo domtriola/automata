@@ -1,18 +1,19 @@
 package simulations
 
 import (
-	"crypto/rand"
 	"image"
 	"image/color"
 	"math"
-	"math/big"
 
 	"github.com/domtriola/automata/internal/gridphysics"
 	"github.com/domtriola/automata/internal/models"
 	"github.com/domtriola/automata/internal/palette"
+	"github.com/domtriola/automata/internal/rand"
 )
 
 const (
+	randImplementation = "math"
+
 	// A multiplier of 100 means scents of at least 0.01 will be barely visible,
 	// since they will be shown at the first index of the grey scale. It also
 	// means that scents over 2.55 will have maximum visibility.
@@ -24,7 +25,6 @@ const (
 	// space when the simulation is initialized.
 	initOrganismChance = 1.0 / 20
 
-	// TODODOM: make an option
 	// organismMovementSpeed is the rate of movement for all organisms.
 	organismMovementSpeed = 1
 
@@ -38,8 +38,8 @@ const (
 	scentSpreadFactor = 0.1
 
 	// TODODOM: make options
-	sensorDistance = 9
-	sensorDegree   = 25
+	sensorDistance = 15
+	sensorDegree   = 50
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -78,12 +78,17 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 		for x, space := range row {
 			space.Features = &models.SpaceFeatures{}
 
-			r, err := rand.Int(rand.Reader, big.NewInt(int64(1/initOrganismChance)))
+			r, err := rand.NewRand(randImplementation)
 			if err != nil {
 				return err
 			}
 
-			shouldPopulate := r.Cmp(big.NewInt(0)) == 0
+			popChance, err := r.Int(1 / initOrganismChance)
+			if err != nil {
+				return err
+			}
+
+			shouldPopulate := popChance == 0
 			if shouldPopulate {
 				o := models.NewOrganism(oID)
 				o.Features.XPos = float64(x)
@@ -91,12 +96,12 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 				o.NextFeatures.XPos = float64(x)
 				o.NextFeatures.YPos = float64(y)
 
-				r, err := rand.Int(rand.Reader, big.NewInt(360))
+				dir, err := r.Int(360)
 				if err != nil {
 					return err
 				}
 
-				o.Features.Direction = gridphysics.DegreeAngle(r.Int64())
+				o.Features.Direction = gridphysics.DegreeAngle(dir)
 
 				space.Organism = o
 
@@ -247,12 +252,17 @@ func rotateOrganism(g *models.Grid, o *models.Organism) error {
 	// If scents to the left and right are greater than straight ahead, pick
 	// left or right randomly
 	if lScent > mScent && rScent > mScent {
-		r, err := rand.Int(rand.Reader, big.NewInt(2))
+		r, err := rand.NewRand(randImplementation)
 		if err != nil {
 			return err
 		}
 
-		if r.Cmp(big.NewInt(0)) == 0 {
+		dir, err := r.Int(2)
+		if err != nil {
+			return err
+		}
+
+		if dir == 0 {
 			o.Features.Direction += sensorDegree
 		} else {
 			o.Features.Direction -= sensorDegree
