@@ -39,7 +39,7 @@ const (
 
 	// TODODOM: make options
 	sensorDistance = 9
-	sensorDegree   = 45
+	sensorDegree   = 25
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -74,8 +74,8 @@ func (s *SlimeMold) OutputName() (string, error) {
 func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 	oID := 0
 
-	for _, row := range g.Rows {
-		for _, space := range row {
+	for y, row := range g.Rows {
+		for x, space := range row {
 			space.Features = &models.SpaceFeatures{}
 
 			r, err := rand.Int(rand.Reader, big.NewInt(int64(1/initOrganismChance)))
@@ -86,7 +86,20 @@ func (s *SlimeMold) InitializeGrid(g *models.Grid) error {
 			shouldPopulate := r.Cmp(big.NewInt(0)) == 0
 			if shouldPopulate {
 				o := models.NewOrganism(oID)
+				o.Features.XPos = float64(x)
+				o.Features.YPos = float64(y)
+				o.NextFeatures.XPos = float64(x)
+				o.NextFeatures.YPos = float64(y)
+
+				r, err := rand.Int(rand.Reader, big.NewInt(360))
+				if err != nil {
+					return err
+				}
+
+				o.Features.Direction = gridphysics.DegreeAngle(r.Int64())
+
 				space.Organism = o
+
 				oID++
 			}
 		}
@@ -170,6 +183,25 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 
 			space.Organism.Features.XPos = space.Organism.NextFeatures.XPos
 			space.Organism.Features.YPos = space.Organism.NextFeatures.YPos
+
+			destCoord := gridphysics.Coordinate{
+				space.Organism.Features.XPos,
+				space.Organism.Features.YPos,
+			}.ToDiscreteCoordinate()
+
+			dest, ok := g.GetSpace(int(destCoord[0]), int(destCoord[1]))
+			if !ok {
+				continue
+			}
+
+			// TODODOM: this is a greedy approach. A better one might be something
+			// more like:
+			// spaceAtOrganismCoord.Organisms = append(space.Organisms, space.Organism)
+			// space.Organisms = pop(space.Organism)
+			if dest.Organism == nil {
+				dest.Organism = space.Organism
+				space.Organism = nil
+			}
 		}
 	}
 }
@@ -178,7 +210,7 @@ func rotateOrganisms(g *models.Grid) error {
 	for _, row := range g.Rows {
 		for _, space := range row {
 			if space.Organism == nil {
-				return nil
+				continue
 			}
 
 			if err := rotateOrganism(g, space.Organism); err != nil {
@@ -280,17 +312,9 @@ func getScensorSpaces(g *models.Grid, o *models.Organism) (lSpace, mSpace, rSpac
 	rCoord := coord.Move(rv).ToDiscreteCoordinate()
 	mCoord := coord.Move(mv).ToDiscreteCoordinate()
 
-	if g.HasCoord(int(lCoord[0]), int(lCoord[1])) {
-		lSpace = g.Rows[lCoord[1]][lCoord[0]]
-	}
-
-	if g.HasCoord(int(rCoord[0]), int(rCoord[1])) {
-		rSpace = g.Rows[rCoord[1]][rCoord[0]]
-	}
-
-	if g.HasCoord(int(mCoord[0]), int(mCoord[1])) {
-		mSpace = g.Rows[mCoord[1]][mCoord[0]]
-	}
+	lSpace, _ = g.GetSpace(int(lCoord[0]), int(rCoord[1]))
+	rSpace, _ = g.GetSpace(int(rCoord[0]), int(rCoord[1]))
+	mSpace, _ = g.GetSpace(int(mCoord[0]), int(mCoord[1]))
 
 	return lSpace, mSpace, rSpace
 }
@@ -312,7 +336,7 @@ func setNextPositions(g *models.Grid) {
 			coord := gridphysics.Coordinate{o.Features.XPos, o.Features.YPos}
 			nextCoord := coord.Move(vect)
 
-			if g.HasCoord(int(coord[0]), int(coord[1])) {
+			if g.HasCoord(int(nextCoord[0]), int(nextCoord[1])) {
 				o.NextFeatures.XPos = nextCoord[0]
 				o.NextFeatures.YPos = nextCoord[1]
 			} else {

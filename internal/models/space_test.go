@@ -16,4 +16,11 @@ func TestNewSpace(t *testing.T) {
 		s := models.NewSpace()
 		assert.NotNil(t, s.Features)
 	})
+
+	t.Run("NewSpace() returns a space without an organism", func(t *testing.T) {
+		t.Parallel()
+
+		s := models.NewSpace()
+		assert.Nil(t, s.Organism)
+	})
 }
