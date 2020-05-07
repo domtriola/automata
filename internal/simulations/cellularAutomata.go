@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/domtriola/automata/internal/models"
-	ccolor "github.com/domtriola/automata/pkg/color"
+	"github.com/domtriola/automata/internal/palette"
 )
 
 var _ models.Simulation = &CellularAutomata{}
@@ -35,6 +35,7 @@ func NewCellularAutomata(cfg models.SimulationConfig) (*CellularAutomata, error)
 		predatorThreshold: cfg.CellularAutomata.PredatorThreshold,
 		predatorDirs:      cfg.CellularAutomata.PredatorDirs,
 	}}
+
 	err := s.setPalette()
 
 	return s, err
@@ -44,7 +45,7 @@ func NewCellularAutomata(cfg models.SimulationConfig) (*CellularAutomata, error)
 // simulation
 func (s *CellularAutomata) OutputName() (string, error) {
 	filename := fmt.Sprintf(
-		"%d_%d_%s",
+		"cellular-automata_%d_%d_%s",
 		s.cfg.nSpecies,
 		s.cfg.predatorThreshold,
 		strings.Join(s.cfg.predatorDirs, ""),
@@ -54,28 +55,33 @@ func (s *CellularAutomata) OutputName() (string, error) {
 }
 
 // InitializeGrid instantiates a grid
-func (s *CellularAutomata) InitializeGrid(g *models.Grid) {
+func (s *CellularAutomata) InitializeGrid(g *models.Grid) error {
 	oID := 0
+
+	// Populate each space
 	for _, row := range g.Rows {
 		for _, space := range row {
 			o := models.NewOrganism(oID)
-			o.CAFeatures.SpeciesID = 1 + rand.Intn(s.cfg.nSpecies)
+			o.Features.SpeciesID = 1 + rand.Intn(s.cfg.nSpecies)
 
 			space.Organism = o
 			oID++
 		}
 	}
 
+	// Let each organism know about it's neighbors
 	for y, row := range g.Rows {
 		for x, space := range row {
 			for _, ns := range g.GetNeighbors(x, y, s.cfg.predatorDirs) {
-				space.Organism.CAFeatures.Neighbors = append(
-					space.Organism.CAFeatures.Neighbors,
+				space.Organism.Features.Neighbors = append(
+					space.Organism.Features.Neighbors,
 					ns.Organism,
 				)
 			}
 		}
 	}
+
+	return nil
 }
 
 // AdvanceFrame determines and assigns the next state of each organism's
@@ -92,7 +98,7 @@ func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
 		for _, space := range row {
 			predatorCount := 0
 
-			for _, n := range space.Organism.CAFeatures.Neighbors {
+			for _, n := range space.Organism.Features.Neighbors {
 				if s.predator(n, space.Organism) {
 					predatorCount++
 				}
@@ -106,19 +112,19 @@ func (s *CellularAutomata) calculateNextFrame(g *models.Grid) {
 }
 
 func (s *CellularAutomata) incrementNextSpeciesID(o *models.Organism) {
-	o.CAFeatures.NextSpeciesID = o.CAFeatures.SpeciesID%s.cfg.nSpecies + 1
+	o.NextFeatures.SpeciesID = o.Features.SpeciesID%s.cfg.nSpecies + 1
 }
 
 func (s *CellularAutomata) predator(neighbor *models.Organism, o *models.Organism) bool {
-	return neighbor.CAFeatures.SpeciesID == o.CAFeatures.SpeciesID%s.cfg.nSpecies+1
+	return neighbor.Features.SpeciesID == o.Features.SpeciesID%s.cfg.nSpecies+1
 }
 
 func (s *CellularAutomata) applyNextFrame(g *models.Grid) {
 	for _, row := range g.Rows {
 		for _, space := range row {
-			if space.Organism.CAFeatures.NextSpeciesID > 0 {
-				space.Organism.CAFeatures.SpeciesID = space.Organism.CAFeatures.NextSpeciesID
-				space.Organism.CAFeatures.NextSpeciesID = 0
+			if space.Organism.NextFeatures.SpeciesID > 0 {
+				space.Organism.Features.SpeciesID = space.Organism.NextFeatures.SpeciesID
+				space.Organism.NextFeatures.SpeciesID = 0
 			}
 		}
 	}
@@ -132,7 +138,7 @@ func (s *CellularAutomata) DrawSpace(
 	x int,
 	y int,
 ) error {
-	colorIndex := sp.Organism.CAFeatures.SpeciesID - 1
+	colorIndex := sp.Organism.Features.SpeciesID - 1
 
 	if colorIndex < 0 || colorIndex > len(img.Palette) {
 		return fmt.Errorf("colorIndex: %d out of bounds of rect: %+v", colorIndex, img.Bounds())
@@ -162,12 +168,13 @@ func (s *CellularAutomata) setPalette() error {
 func createPalette(nSpecies int) (color.Palette, error) {
 	colors := color.Palette{}
 
-	rainbow, err := ccolor.RGBARainbow(7)
+	rainbow, err := palette.Rainbow(7)
 	if err != nil {
 		return rainbow, err
 	}
 
 	step := len(rainbow) / nSpecies
+
 	for i := 0; i < nSpecies; i++ {
 		colors = append(colors, rainbow[i*step])
 	}

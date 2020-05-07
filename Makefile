@@ -1,4 +1,4 @@
-test: lint unit integration
+test: unit integration lint
 
 unit:
 	scripts/unit.sh
@@ -12,5 +12,13 @@ lint:
 format:
 	gofmt -s -w .
 
-example:
-	go run cmd/cli/main.go
+clean:
+	rm -rf tmp/{*.gif,*.out}
+
+example_automata:
+	go run cmd/cli/main.go --width 100 --height 100 --nFrames 100
+
+example_slimemold:
+	go run cmd/cli/main.go --sim slime_mold --width 100 --height 100 --nFrames 100
+
+.PHONY: test unit integration lint format example_automata example_slimemold

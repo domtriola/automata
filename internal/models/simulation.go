@@ -5,16 +5,18 @@ import (
 	"image/color"
 )
 
-// CellularAutomataType identifies the cellular automata simulation
-var CellularAutomataType = "cellular_automata"
+const (
+	// CellularAutomataType identifies the cellular automata simulation
+	CellularAutomataType = "cellular_automata"
 
-// SlimeMoldType identifies the slime mold simulation
-var SlimeMoldType = "slime_mold"
+	// SlimeMoldType identifies the slime mold simulation
+	SlimeMoldType = "slime_mold"
+)
 
 // Simulation is the interface that all simulations must follow
 type Simulation interface {
 	OutputName() (string, error)
-	InitializeGrid(g *Grid)
+	InitializeGrid(g *Grid) error
 	AdvanceFrame(g *Grid) error
 	DrawSpace(sp *Space, img *image.Paletted, x int, y int) error
 	GetPalette() color.Palette
@@ -43,6 +45,8 @@ type CellularAutomataConfig struct {
 
 // SlimeMoldConfig are options specific to the cellular automata simulation
 type SlimeMoldConfig struct {
-	ScentDecay        float32
-	ScentSpreadFactor float32
+	ScentDecay        float64
+	ScentSpreadFactor float64
+	SenseReach        int
+	SenseDegree       int
 }

@@ -4,7 +4,7 @@ set -euo pipefail
 
 echo "Running unit tests"
 
-go test $(pwd)/...
+go test --race -coverprofile tmp/cp.out $(pwd)/...
 
 echo
 echo "Unit tests pass!"

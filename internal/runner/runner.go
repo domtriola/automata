@@ -20,33 +20,6 @@ type Runner struct {
 	grid *models.Grid
 }
 
-// Config holds configs for the simulation runner
-type Config struct {
-	// Width sets the width of the Grid
-	Width int
-
-	// Height sets the height of the Grid
-	Height int
-
-	// NFrames is the amount of frames that will be built
-	NFrames int
-
-	Simulation models.SimulationConfig
-	Output     OutputConfig
-	GIF        GIFConfig
-}
-
-// OutputConfig holds configs for the output of the simulation
-type OutputConfig struct {
-	Path string
-}
-
-// GIFConfig holds configurations specific to building a GIF
-type GIFConfig struct {
-	// Delay units are 100th of a second
-	Delay int
-}
-
 // New creates a new instance for Runner
 func New(simType string, cfg Config) (Runner, error) {
 	var err error
@@ -63,7 +36,10 @@ func New(simType string, cfg Config) (Runner, error) {
 			return r, err
 		}
 	case models.SlimeMoldType:
-		r.sim = simulations.NewSlimeMold(cfg.Simulation)
+		r.sim, err = simulations.NewSlimeMold(cfg.Simulation)
+		if err != nil {
+			return r, err
+		}
 	default:
 		return r, fmt.Errorf("could not find simulation type: %s", simType)
 	}
@@ -78,7 +54,15 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 		return "", err
 	}
 
-	r.sim.InitializeGrid(r.grid)
+	f, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+
+	err = r.sim.InitializeGrid(r.grid)
+	if err != nil {
+		return "", err
+	}
 
 	images, err := r.Animate(r.grid)
 	if err != nil {
@@ -86,11 +70,6 @@ func (r *Runner) CreateGIF() (filepath string, err error) {
 	}
 
 	g := buildGIF(images, r.cfg.GIF.Delay)
-
-	f, err := os.Create(filepath)
-	if err != nil {
-		return "", err
-	}
 
 	if err = gif.EncodeAll(f, g); err != nil {
 		return "", err
@@ -109,6 +88,7 @@ func (r *Runner) Animate(g *models.Grid) ([]*image.Paletted, error) {
 		if err != nil {
 			return images, err
 		}
+
 		images = append(images, img)
 
 		if err := r.sim.AdvanceFrame(g); err != nil {
