@@ -1,6 +1,7 @@
 package simulations
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -27,19 +28,6 @@ const (
 
 	// organismMovementSpeed is the rate of movement for all organisms.
 	organismMovementSpeed = 1
-
-	// TODODOM: make an option
-	// scentDecay is the rate at which a scent decays from a space.
-	scentDecay = 0.9
-
-	// TODODOM: make an option
-	// scentSpreadFactor is the percentage of scent that dissapates to neighboring
-	// spaces.
-	scentSpreadFactor = 0.1
-
-	// TODODOM: make options
-	sensorDistance = 15
-	sensorDegree   = 50
 )
 
 var _ models.Simulation = &SlimeMold{}
@@ -53,11 +41,20 @@ type SlimeMold struct {
 
 // SlimeMoldConfig holds the configurations for the slime mold simulation
 type SlimeMoldConfig struct {
+	scentDecay        float64
+	scentSpreadFactor float64
+	senseReach        float64
+	senseDegree       gridphysics.DegreeAngle
 }
 
 // NewSlimeMold initializes and returns a new slime mold simulation
 func NewSlimeMold(cfg models.SimulationConfig) (*SlimeMold, error) {
-	s := &SlimeMold{cfg: SlimeMoldConfig{}}
+	s := &SlimeMold{cfg: SlimeMoldConfig{
+		scentDecay:        cfg.SlimeMold.ScentDecay,
+		scentSpreadFactor: cfg.SlimeMold.ScentSpreadFactor,
+		senseReach:        float64(cfg.SlimeMold.SenseReach),
+		senseDegree:       gridphysics.DegreeAngle(cfg.SlimeMold.SenseDegree),
+	}}
 
 	s.setPalette()
 
@@ -67,7 +64,15 @@ func NewSlimeMold(cfg models.SimulationConfig) (*SlimeMold, error) {
 // OutputName creates an output file path based on parameters of the
 // simulation
 func (s *SlimeMold) OutputName() (string, error) {
-	return "slime_mold.gif", nil
+	filename := fmt.Sprintf(
+		"slime-mold_%d_%d_%d_%d",
+		int(s.cfg.senseDegree),
+		int(s.cfg.senseReach),
+		int(s.cfg.scentDecay*100),
+		int(s.cfg.scentSpreadFactor*100),
+	)
+
+	return filename, nil
 }
 
 // InitializeGrid instantiates a grid
@@ -169,12 +174,12 @@ func (s *SlimeMold) setPalette() {
 }
 
 func (s *SlimeMold) calculateNextFrame(g *models.Grid) error {
-	if err := rotateOrganisms(g); err != nil {
+	if err := rotateOrganisms(g, s.cfg.senseDegree, s.cfg.senseReach); err != nil {
 		return err
 	}
 
 	setNextPositions(g)
-	disperseScentTrails(g)
+	disperseScentTrails(g, s.cfg.scentDecay)
 
 	return nil
 }
@@ -211,14 +216,14 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 	}
 }
 
-func rotateOrganisms(g *models.Grid) error {
+func rotateOrganisms(g *models.Grid, senseDegree gridphysics.DegreeAngle, senseReach float64) error {
 	for _, row := range g.Rows {
 		for _, space := range row {
 			if space.Organism == nil {
 				continue
 			}
 
-			if err := rotateOrganism(g, space.Organism); err != nil {
+			if err := rotateOrganism(g, space.Organism, senseDegree, senseReach); err != nil {
 				return err
 			}
 		}
@@ -227,22 +232,15 @@ func rotateOrganisms(g *models.Grid) error {
 	return nil
 }
 
-func rotateOrganism(g *models.Grid, o *models.Organism) error {
+func rotateOrganism(
+	g *models.Grid,
+	o *models.Organism,
+	senseDegree gridphysics.DegreeAngle,
+	senseReach float64,
+) error {
 	o.Features.Direction = reduceDirection(o.Features.Direction)
 
-	lSpace, mSpace, rSpace := getScensorSpaces(g, o)
-
-	if lSpace == nil || rSpace == nil || mSpace == nil {
-		// Continue in the same direction. Movement phase will turn organism
-		// around if it can't proceed further.
-		// TODODOM: be more clever - maybe rotate opposite the nil direction?
-		// Otherwise organisms could get in a swim-lane loop near the edge.
-		return nil
-	}
-
-	lScent := lSpace.Features.Scent
-	rScent := rSpace.Features.Scent
-	mScent := mSpace.Features.Scent
+	lScent, mScent, rScent := getScents(g, o, senseDegree, senseReach)
 
 	// If the middle scensor has the greatest scent, proceed straight ahead
 	if mScent > lScent && mScent > rScent {
@@ -263,9 +261,9 @@ func rotateOrganism(g *models.Grid, o *models.Organism) error {
 		}
 
 		if dir == 0 {
-			o.Features.Direction += sensorDegree
+			o.Features.Direction += senseDegree
 		} else {
-			o.Features.Direction -= sensorDegree
+			o.Features.Direction -= senseDegree
 		}
 
 		return nil
@@ -273,13 +271,13 @@ func rotateOrganism(g *models.Grid, o *models.Organism) error {
 
 	// If left scent is greater than right, turn left
 	if lScent > rScent {
-		o.Features.Direction += sensorDegree
+		o.Features.Direction += senseDegree
 		return nil
 	}
 
 	// If right scent is greater than left, turn right
 	if rScent > lScent {
-		o.Features.Direction -= sensorDegree
+		o.Features.Direction -= senseDegree
 		return nil
 	}
 
@@ -299,22 +297,29 @@ func reduceDirection(d gridphysics.DegreeAngle) gridphysics.DegreeAngle {
 	return d
 }
 
-func getScensorSpaces(g *models.Grid, o *models.Organism) (lSpace, mSpace, rSpace *models.Space) {
+// getScents returns the scents at the spaces of an organism's scensors.
+// getScent returns nil for a scent if its corresponding space is out of bounds.
+func getScents(
+	g *models.Grid,
+	o *models.Organism,
+	sensorDegree gridphysics.DegreeAngle,
+	sensorReach float64,
+) (lScent, mScent, rScent float64) {
 	ld := o.Features.Direction + sensorDegree
 	lv := gridphysics.AngleVector{
 		Direction: ld.ToRadians(),
-		Magnitude: sensorDistance,
+		Magnitude: sensorReach,
 	}
 
 	rd := o.Features.Direction - sensorDegree
 	rv := gridphysics.AngleVector{
 		Direction: rd.ToRadians(),
-		Magnitude: sensorDistance,
+		Magnitude: sensorReach,
 	}
 
 	mv := gridphysics.AngleVector{
 		Direction: o.Features.Direction.ToRadians(),
-		Magnitude: sensorDistance,
+		Magnitude: sensorReach,
 	}
 
 	coord := gridphysics.Coordinate{o.Features.XPos, o.Features.YPos}
@@ -322,11 +327,23 @@ func getScensorSpaces(g *models.Grid, o *models.Organism) (lSpace, mSpace, rSpac
 	rCoord := coord.Move(rv).ToDiscreteCoordinate()
 	mCoord := coord.Move(mv).ToDiscreteCoordinate()
 
-	lSpace, _ = g.GetSpace(int(lCoord[0]), int(rCoord[1]))
-	rSpace, _ = g.GetSpace(int(rCoord[0]), int(rCoord[1]))
-	mSpace, _ = g.GetSpace(int(mCoord[0]), int(mCoord[1]))
+	lSpace, _ := g.GetSpace(int(lCoord[0]), int(rCoord[1]))
+	rSpace, _ := g.GetSpace(int(rCoord[0]), int(rCoord[1]))
+	mSpace, _ := g.GetSpace(int(mCoord[0]), int(mCoord[1]))
 
-	return lSpace, mSpace, rSpace
+	if lSpace != nil {
+		lScent = lSpace.Features.Scent
+	}
+
+	if rSpace != nil {
+		rScent = rSpace.Features.Scent
+	}
+
+	if mSpace != nil {
+		mScent = mSpace.Features.Scent
+	}
+
+	return lScent, mScent, rScent
 }
 
 func setNextPositions(g *models.Grid) {
@@ -356,7 +373,7 @@ func setNextPositions(g *models.Grid) {
 	}
 }
 
-func disperseScentTrails(g *models.Grid) {
+func disperseScentTrails(g *models.Grid, scentDecay float64) {
 	for _, row := range g.Rows {
 		for _, space := range row {
 			space.Features.Scent *= scentDecay

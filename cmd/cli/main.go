@@ -32,11 +32,17 @@ type args struct {
 	height     int
 	nFrames    int
 	gDelay     int
+
+	// Cellular Automata
+	nSpecies   int
 	pThreshold int
 	pDirs      string
 
-	// Cellular Automata
-	nSpecies int
+	// Slime Mold
+	sDecay     float64
+	sSpread    float64
+	senseReach int
+	senseDeg   int
 }
 
 func main() {
@@ -101,6 +107,8 @@ func collectArgs() args {
 	height := flag.Int("height", defaultHeight, "The height of the simulation grid")
 	nFrames := flag.Int("nFrames", defaultNFrames, "The number of frames the simulation generates")
 	gDelay := flag.Int("gDelay", defaultGIFDelay, "The amound of time between frames in the GIF in 100ths of a second")
+
+	// Cellular Automata
 	nSpecies := flag.Int("nSpecies", defaultNSpecies, "The number of species types in a cellular automata simulation")
 	pThreshold := flag.Int(
 		"pThreshold",
@@ -112,6 +120,12 @@ func collectArgs() args {
 		validDirs,
 		"Comma separated cardinal direction abbreviations that a predator cell can attack a prey cell from.",
 	)
+
+	// Slime Mold
+	sDecay := flag.Float64("sDecay", 0.9, "The decay rate for scents left by organisms")
+	sSpread := flag.Float64("sSpread", 0.1, "The percentage of scent that dissapates to neighboring spaces")
+	senseReach := flag.Int("sReach", 9, "The reach of the scent scensors of organisms")
+	senseDeg := flag.Int("sDeg", 45, "The angle in degrees of the organisms' scent sensors")
 
 	flag.Parse()
 
@@ -125,6 +139,10 @@ func collectArgs() args {
 		nSpecies:   *nSpecies,
 		pThreshold: *pThreshold,
 		pDirs:      *pDirs,
+		sDecay:     *sDecay,
+		sSpread:    *sSpread,
+		senseReach: *senseReach,
+		senseDeg:   *senseDeg,
 	}
 }
 
@@ -144,7 +162,12 @@ func assembleSimConfig(a args) models.SimulationConfig {
 			PredatorDirs:      dirs,
 		}
 	case models.SlimeMoldType:
-		cfg.SlimeMold = models.SlimeMoldConfig{}
+		cfg.SlimeMold = models.SlimeMoldConfig{
+			ScentDecay:        a.sDecay,
+			ScentSpreadFactor: a.sSpread,
+			SenseReach:        a.senseReach,
+			SenseDegree:       a.senseDeg,
+		}
 	}
 
 	return cfg

@@ -45,6 +45,8 @@ type CellularAutomataConfig struct {
 
 // SlimeMoldConfig are options specific to the cellular automata simulation
 type SlimeMoldConfig struct {
-	ScentDecay        float32
-	ScentSpreadFactor float32
+	ScentDecay        float64
+	ScentSpreadFactor float64
+	SenseReach        int
+	SenseDegree       int
 }
