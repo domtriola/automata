@@ -204,7 +204,8 @@ func (s *SlimeMold) applyNextFrame(g *models.Grid) {
 				continue
 			}
 
-			// TODODOM: this is a greedy approach. A better one might be something
+			// NOTE: this is a greedy approach. A better one might be to allow
+			// multiple organisms to reside at any particular space and do something
 			// more like:
 			// spaceAtOrganismCoord.Organisms = append(space.Organisms, space.Organism)
 			// space.Organisms = pop(space.Organism)

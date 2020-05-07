@@ -16,6 +16,7 @@ golangci-lint run \
   -E goconst \
   -E gocritic \
   -E gocyclo \
+  -E godox \
   -E gofmt \
   -E goimports \
   -E golint \
@@ -34,8 +35,6 @@ golangci-lint run \
   -E unparam \
   -E whitespace \
   -E wsl \
-  # TODODOM:
-  # -E godox \
 
 echo
 echo "Lint tests pass!"

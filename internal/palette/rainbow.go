@@ -10,7 +10,6 @@ import (
 // the step, the more individual colors will result in the palette. The smallest
 // possible step is 7, which results in 223 evenly spaced colors. With larger
 // steps, there will be less colors, and the colors will be less evenly spaced.
-// TODODOM: make that not so by passing overflow to next color selection.
 // nolint: funlen
 func Rainbow(step int) (color.Palette, error) {
 	p := color.Palette{}
@@ -37,7 +36,8 @@ func Rainbow(step int) (color.Palette, error) {
 	for rgba.G < 255 {
 		nextValue := int(rgba.G) + step
 
-		// TODODOM: don't discard overflow. Use it to make distribution more even.
+		// NOTE: an alternative approach would be to keep track of the overflow to
+		// make the overall distribution of color more even.
 		if nextValue > 255 {
 			nextValue = 255
 		}
